@@ -4,7 +4,7 @@ import 'package:health_coach/constants/constants.dart';
 import '../theme/theme.dart';
 
 class CustomElevatedButton extends StatelessWidget {
-  final VoidCallback voidCallback;
+  final VoidCallback? voidCallback;
   final String text;
   final Color? foregroundColor;
   final Color? backgroundColor;

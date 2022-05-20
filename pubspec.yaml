@@ -45,6 +45,8 @@ dependencies:
   flutter_svg: ^1.0.3
   shared_preferences: ^2.0.15
   image_picker: ^0.8.5+3
+  iconify_flutter: ^0.0.4
+  lottie: ^1.3.0
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +75,7 @@ flutter:
      - assets/images/
      - assets/images/avatars/
      - assets/images/icons/
+     - assets/lottie_animation/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -10,4 +10,11 @@ class LoginSignupCubit extends Cubit<LoginSignupState> {
 
   void navigateSignup()=> emit(NavigateToSignupScreen());
   void navigateLogin()=>emit(NavigateToLoginScreen());
+  void popBack()=>emit(PopBack());
+
+  void navigateToWhere(GlobalKey<FormState> globalKey){
+    if(globalKey.currentState!.validate()){
+      emit(NavigateToWhere());
+    }
+  }
 }

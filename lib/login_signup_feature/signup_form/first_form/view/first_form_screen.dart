@@ -2,10 +2,14 @@ import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
-import 'package:health_coach/login_signup_feature/signup_form/first_form/cubit/first_form_cubit.dart';
+import 'package:health_coach/custom_widgets/form_field.dart';
+import 'package:health_coach/custom_widgets/nextButton.dart';
+import 'package:health_coach/login_signup_feature/signup_form/cubit/first_form_cubit.dart';
 import 'package:health_coach/theme/theme.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
 
 class SignupFirstFormScreen extends StatelessWidget {
@@ -30,11 +34,11 @@ class SignupFirstFormScreen extends StatelessWidget {
                         children: [
                           BlocProvider.value(
                             value: context.read<FirstFormCubit>(),
-                            child: AvatarSelect(),
+                            child: AvatarOption(),
                           ),
                           BlocProvider.value(
                             value: context.read<FirstFormCubit>(),
-                            child: GallerySelect(),
+                            child: GalleryOption(),
                           ),
                         ],
                       ),
@@ -62,6 +66,9 @@ class SignupFirstFormScreen extends StatelessWidget {
             Navigator.pop(context);
             return;
           }
+          if(state is PopBack){
+            Navigator.pop(context);
+          }
         },
         child: _Scaffold(),
       ),
@@ -69,54 +76,191 @@ class SignupFirstFormScreen extends StatelessWidget {
   }
 }
 
-class _Scaffold extends StatelessWidget {
-  const _Scaffold({
+class _Scaffold extends StatelessWidget with InputValidatorMixin {
+  _Scaffold({
     Key? key,
   }) : super(key: key);
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 4.w, top: 2.h),
-              child: Text(
+      body: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (overScroll) {
+          overScroll.disallowIndicator();
+          return true;
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5.w),
+          child: ListView(
+            children: [
+              SizedBox(
+                height: 2.h,
+              ),
+              Text(
                 'We need to know about You!',
-                style: themeData.textTheme.headlineMedium!
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineMedium!
                     .copyWith(color: commonBlack),
               ),
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  context.read<FirstFormCubit>().selectAvatarGalleryDialog();
-                },
-                child: Stack(
+              SizedBox(
+                height: 2.h,
+              ),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    context.read<FirstFormCubit>().selectAvatarGalleryDialog();
+                  },
+                  child: Stack(
+                    children: [
+                      ImageSelector(),
+                      Positioned(
+                        left: 31.w,
+                        top: 15.h,
+                        child: const _EditIconStack(),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Form(
+                autovalidateMode: AutovalidateMode.disabled,
+                key: _formKey,
+                onChanged: () {},
+                child: Column(
                   children: [
-                    ImageSelector(),
-                    Positioned(
-                      left: 35.w,
-                      top: 18.h,
-                      child: _EditIconStack(),
-                    )
+                    CustomTextField(
+                      head: 'Name',
+                      hintText: 'John',
+                      icon: const Iconify(
+                        nameIcon,
+                        color: commonGreen,
+                      ),
+                      delay: 100,
+                      validator: (val) {
+                        context.read<FirstFormCubit>().checkName(val);
+                        return isNameValid(val);
+                      },
+                    ),
+                    CustomTextField(
+                      delay: 200,
+                      validator: (val) {
+                        context.read<FirstFormCubit>().checkEmail(val);
+                        return isEmailValid(val);
+                      },
+                      head: 'Email',
+                      hintText: 'john123@gmail.com',
+                      icon: const Iconify(
+                        emailIcon,
+                        color: commonGreen,
+                      ),
+                    ),
+                    CustomTextField(
+                      delay: 300,
+                      validator: (val) {
+                        context.read<FirstFormCubit>().checkMobile(val);
+                        return isMobileValid(val);
+                      },
+                      head: 'Mobile',
+                      hintText: '9876543210',
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      icon: const Iconify(
+                        mobileIcon,
+                        color: commonGreen,
+                      ),
+                      textInputType: TextInputType.number,
+                    ),
+                    CustomTextField(
+                      textInputAction: TextInputAction.done,
+                      delay: 400,
+                      obscureText: true,
+                      validator: (val) {
+                        context.read<FirstFormCubit>().checkPassword(val);
+                        return isPasswordValid(val);
+                      },
+                      head: 'Password',
+                      hintText: 'John@123',
+                      icon: const Iconify(
+                        passwordIcon,
+                        color: commonGreen,
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: 2.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ZoomIn(
+                    child: IconButton(
+                      onPressed: () {
+                        context.read<FirstFormCubit>().popBack();
+                      },
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      splashRadius: 0.01,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(right: 1.w),
+                    child: ZoomIn(
+                        child: const _NextIconButton(
+                    )),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 3.h,
+              ),
+            ],
+          ),
         ),
       ),
     ));
   }
 }
+
+class _NextIconButton extends StatelessWidget {
+
+  const _NextIconButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<FirstFormCubit, FirstFormState>(
+      buildWhen: ((previous, current) {
+        if (current is EnableNextButton || current is DisableNextButton) {
+          return true;
+        }
+        return false;
+      }),
+      builder: (context, state) {
+        Color containerColor = commonWhite;
+        Color iconColor = commonGreen;
+        double scale = .9;
+        if (state is EnableNextButton) {
+          containerColor = commonGreen;
+          iconColor = commonWhite;
+          scale = 1.1;
+        } else if (state is DisableNextButton) {
+          containerColor = commonWhite;
+          iconColor = commonGreen;
+          scale = .9;
+        }
+        return CustomNextButton(scale: scale, iconColor: iconColor, containerColor: containerColor, onPressed: (){
+          if (state is EnableNextButton) context.read<FirstFormCubit>().navigateToNext(context);
+        });
+      },
+    );
+  }
+}
+
+
 
 class ImageSelector extends StatelessWidget {
   ImageSelector({
@@ -138,8 +282,8 @@ class ImageSelector extends StatelessWidget {
         }
         return isGallery!
             ? Container(
-                height: 23.h,
-                width: 23.h,
+                height: 20.h,
+                width: 20.h,
                 decoration: BoxDecoration(
                   border: Border.all(color: commonGreen, width: 3),
                   shape: BoxShape.circle,
@@ -152,8 +296,8 @@ class ImageSelector extends StatelessWidget {
                 ),
               )
             : Container(
-                height: 23.h,
-                width: 23.h,
+                height: 20.h,
+                width: 20.h,
                 decoration: BoxDecoration(
                     border: Border.all(color: commonGreen, width: 3),
                     color: Colors.transparent,
@@ -167,8 +311,9 @@ class ImageSelector extends StatelessWidget {
   }
 }
 
-class AvatarSelect extends StatelessWidget {
-  const AvatarSelect({
+///3 - avatar,avatar dialog, gallery
+class AvatarOption extends StatelessWidget {
+  const AvatarOption({
     Key? key,
   }) : super(key: key);
 
@@ -249,8 +394,8 @@ class AvatarSelectionDialog extends StatelessWidget {
   }
 }
 
-class GallerySelect extends StatelessWidget {
-  const GallerySelect({
+class GalleryOption extends StatelessWidget {
+  const GalleryOption({
     Key? key,
   }) : super(key: key);
 
@@ -278,6 +423,7 @@ class GallerySelect extends StatelessWidget {
   }
 }
 
+///2 - avatar widget,edit icon widget
 class AvatarShow extends StatelessWidget {
   final String imagePath;
 
@@ -289,8 +435,8 @@ class AvatarShow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 8.5.h,
-      width: 8.5.h,
+      height: 8.h,
+      width: 8.h,
       decoration: BoxDecoration(
           color: Colors.transparent,
           shape: BoxShape.circle,

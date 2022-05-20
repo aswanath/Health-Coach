@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return MaterialApp(
+            debugShowMaterialGrid: false,
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: themeData,

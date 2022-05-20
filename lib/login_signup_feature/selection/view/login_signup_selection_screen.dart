@@ -5,15 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
+import 'package:health_coach/login_signup_feature/cubit/login_signup_cubit.dart';
 import 'package:health_coach/login_signup_feature/login/view/login_screen.dart';
 import 'package:health_coach/login_signup_feature/signup_selection/view/coach_learner_selection_screen.dart';
 import 'package:health_coach/splash/view/splash.dart';
 import 'package:health_coach/theme/theme.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
-
-import '../cubit/login_signup_cubit.dart';
-
 
 
 class SelectionScreen extends StatelessWidget {
@@ -23,10 +21,33 @@ class SelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => LoginSignupCubit(),
-      child: SafeArea(
-        child: Scaffold(
-          body: Stack(
-            children: [_BackgroundImage(), _Blur(), _Texts()],
+      child: BlocListener<LoginSignupCubit, LoginSignupState>(
+        listener: (context, state) {
+          if (state is NavigateToLoginScreen) {
+            Navigator.push(
+                context,
+                PageTransition(
+                    child: BlocProvider.value(
+                      value: context.read<LoginSignupCubit>(),
+                      child: LoginScreen(),
+                    ),
+                    type: PageTransitionType.fade));
+            return;
+          }
+          if (state is NavigateToSignupScreen) {
+            Navigator.push(
+                context,
+                PageTransition(
+                    child: CoachLearnerSelection(),
+                    type: PageTransitionType.fade));
+            return;
+          }
+        },
+        child: SafeArea(
+          child: Scaffold(
+            body: Stack(
+              children: [_BackgroundImage(), _Blur(), _Texts()],
+            ),
           ),
         ),
       ),
@@ -64,65 +85,45 @@ class _Texts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginSignupCubit, LoginSignupState>(
-      listener: (context, state) {
-        if (state is NavigateToLoginScreen) {
-          Navigator.push(
-              context,
-              PageTransition(
-                  child: LoginScreen(), type: PageTransitionType.fade));
-          return;
-        }
-        if (state is NavigateToSignupScreen) {
-          Navigator.push(
-              context,
-              PageTransition(
-                  child: CoachLearnerSelection(),
-                  type: PageTransitionType.fade));
-          return;
-        }
-      },
-      child: Column(
-        children: [
-          SizedBox(
-            height: 15.h,
+    return Column(
+      children: [
+        SizedBox(
+          height: 15.h,
+        ),
+        const Logo(),
+        CarouselSlider(
+          items: items,
+          options: CarouselOptions(height: 50.h, autoPlay: true),
+        ),
+        SizedBox(
+          height: 12.h,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomElevatedButton(
+                voidCallback: () {
+                  context.read<LoginSignupCubit>().navigateLogin();
+                },
+                text: 'Log In',
+                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 7.w),
+              ),
+              CustomElevatedButton(
+                foregroundColor: commonGreen,
+                backgroundColor: Colors.transparent,
+                borderColor: commonGreen,
+                voidCallback: () {
+                  context.read<LoginSignupCubit>().navigateSignup();
+                },
+                text: 'Sign Up',
+                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+              )
+            ],
           ),
-          const Logo(),
-          CarouselSlider(
-            items: items,
-            options: CarouselOptions(height: 50.h, autoPlay: true),
-          ),
-          SizedBox(
-            height: 12.h,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomElevatedButton(
-                  voidCallback: () {
-                    context.read<LoginSignupCubit>().navigateLogin();
-                  },
-                  text: 'Log In',
-                  padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 7.w),
-                ),
-                CustomElevatedButton(
-                  foregroundColor: commonGreen,
-                  backgroundColor: Colors.transparent,
-                  borderColor: commonGreen,
-                  voidCallback: () {
-                    context.read<LoginSignupCubit>().navigateSignup();
-                  },
-                  text: 'Sign Up',
-                  padding:
-                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
