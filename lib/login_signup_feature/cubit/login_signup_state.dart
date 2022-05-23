@@ -5,10 +5,13 @@ abstract class LoginSignupState {}
 
 class LoginSignupInitial extends LoginSignupState {}
 
-class NavigateToSignupScreen extends LoginSignupState{}
+class NavigateToSignupScreen extends LoginSignupState {}
 
-class NavigateToLoginScreen extends LoginSignupState{}
+class NavigateToLoginScreen extends LoginSignupState {}
 
-class NavigateToWhere extends LoginSignupState{}
+class UserTypeNavigation extends LoginSignupState{
+  final UserType userType;
+  UserTypeNavigation({required this.userType});
+}
 
-class PopBack extends LoginSignupState{}
+class PopBack extends LoginSignupState {}

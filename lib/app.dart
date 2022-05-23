@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:health_coach/learner_feature/bottom_navigation.dart';
 import 'package:health_coach/splash/view/splash.dart';
 import 'package:health_coach/theme/theme.dart';
 import 'package:sizer/sizer.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: themeData,
-            home: const SelectionScreen(),
+            home: const BottomNavigationLearnerScreen(),
           );
         }
     );

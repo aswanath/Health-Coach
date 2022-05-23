@@ -74,71 +74,70 @@ mixin InputValidatorMixin {
     }
   }
 
-  String? isAgeValid(String? value){
-    if(value!.isEmpty){
+  String? isAgeValid(String? value) {
+    if (value!.isEmpty) {
       return "Age can't be empty";
-    }else{
+    } else {
       int age = int.parse(value);
-      if(age>99||age<5){
-       return "Please enter a valid age between 5 - 99";
-      }else{
+      if (age > 99 || age < 5) {
+        return "Please enter a valid age between 5 - 99";
+      } else {
         return null;
       }
     }
   }
 
-  String? isWeightValid(String? value){
-    if(value!.isNotEmpty){
+  String? isWeightValid(String? value) {
+    if (value!.isNotEmpty) {
       int weight = int.parse(value);
-      if(weight>200||weight<5){
+      if (weight > 200 || weight < 5) {
         return "Please enter a valid weight between 5 - 200";
-      }else{
+      } else {
         return null;
       }
-    }else{
+    } else {
       return null;
     }
   }
 
-  String? isHeightValid(String? value){
-    if(value!.isNotEmpty){
+  String? isHeightValid(String? value) {
+    if (value!.isNotEmpty) {
       int weight = int.parse(value);
-      if(weight>300||weight<50){
+      if (weight > 300 || weight < 50) {
         return "Please enter a valid height between 50 - 300";
-      }else{
+      } else {
         return null;
       }
-    }else{
+    } else {
       return null;
     }
   }
 
-  String? isQualificationValid(String? value){
-    if(value!.isNotEmpty){
+  String? isQualificationValid(String? value) {
+    if (value!.isNotEmpty) {
       return null;
-    }else{
+    } else {
       return "Please select your qualification";
     }
   }
 
-  String? isStreamValid(String? value){
-    if(value!.isEmpty){
+  String? isStreamValid(String? value) {
+    if (value!.isEmpty) {
       return "Please enter at least one stream";
-    }else{
+    } else {
       return null;
     }
   }
 
-  String? isAboutValid(String? value){
-    if(value!.isEmpty){
-    return "Please describe yourself";
-  }else if(value.length<10){
+  String? isAboutValid(String? value) {
+    if (value!.isEmpty) {
+      return "Please describe yourself";
+    } else if (value.length < 10) {
       return "At least 10 characters";
-    }else{
+    } else {
       return null;
     }
-    }
-
+  }
 }
 
 const String nameIcon =
@@ -155,3 +154,15 @@ const String heightIcon =
     '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><rect x="0" y="0" width="24" height="24" fill="none" stroke="none" /><path fill="currentColor" d="M7 2c1.78 0 2.67 2.16 1.42 3.42C7.16 6.67 5 5.78 5 4a2 2 0 0 1 2-2M5.5 7h3a2 2 0 0 1 2 2v5.5H9V22H5v-7.5H3.5V9a2 2 0 0 1 2-2M19 8h2l-3-4l-3 4h2v8h-2l3 4l3-4h-2m3-14h-8v2h8m0 16h-8v2h8"/></svg>';
 const String weightIcon =
     '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 48 48"><rect x="0" y="0" width="48" height="48" fill="none" stroke="none" /><path fill="currentColor" fill-rule="evenodd" d="M40.21 38.222A4 4 0 0 1 36.216 42H11.784a4 4 0 0 1-3.994-3.778l-1.555-28A4 4 0 0 1 10.228 6h27.544a4 4 0 0 1 3.994 4.222l-1.556 28Zm-5.966-20.443c.82-.54 1.026-1.611.353-2.308a14.425 14.425 0 0 0-3.945-2.882a15.254 15.254 0 0 0-6.558-1.587a15.293 15.293 0 0 0-6.611 1.382a14.508 14.508 0 0 0-4.045 2.756c-.697.676-.53 1.752.271 2.318l4.312 3.046c.8.566 1.928.383 2.757-.145a5.58 5.58 0 0 1 .667-.362a5.775 5.775 0 0 1 2.344-.523l3.393-3.901a1 1 0 0 1 1.51 1.312L26.06 19.91a5.652 5.652 0 0 1 1.016.548c.81.553 1.93.77 2.75.23l4.417-2.91Z" clip-rule="evenodd"/></svg>';
+const String homePrimaryIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 12 12"><rect x="0" y="0" width="12" height="12" fill="none" stroke="none" /><path fill="currentColor" d="M5.693 1.105a.5.5 0 0 1 .614 0l4.114 3.2A1.5 1.5 0 0 1 11 5.49V10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V7H5v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5.49c0-.464.214-.9.58-1.185l4.113-3.2ZM6 2.133L2.193 5.094A.5.5 0 0 0 2 5.49V10h2V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h2V5.49a.5.5 0 0 0-.193-.396L6 2.134Z"/></svg>';
+const String homeSecondaryIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 12 12"><rect x="0" y="0" width="12" height="12" fill="none" stroke="none" /><path fill="currentColor" d="M6.307 1.105a.5.5 0 0 0-.614 0l-4.114 3.2A1.5 1.5 0 0 0 1 5.49V10a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V7h2v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V5.49a1.5 1.5 0 0 0-.58-1.185l-4.113-3.2Z"/></svg>';
+const String mePrimaryIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 48 48"><rect x="0" y="0" width="48" height="48" fill="none" stroke="none" /><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20Z" clip-rule="evenodd"/><path d="M24 23a5 5 0 1 0 0-10a5 5 0 0 0 0 10Z"/><path stroke-linecap="round" d="M10.022 38.332C10.366 33.121 14.702 29 20 29h8c5.291 0 9.623 4.11 9.977 9.311"/></g></svg>';
+const String meSecondaryIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 48 48"><rect x="0" y="0" width="48" height="48" fill="none" stroke="none" /><mask id="svgIDa"><g fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20Z" clip-rule="evenodd"/><path fill="#fff" d="M24 23a5 5 0 1 0 0-10a5 5 0 0 0 0 10Z"/><path stroke-linecap="round" d="M10.022 38.332C10.366 33.121 14.702 29 20 29h8c5.291 0 9.623 4.11 9.977 9.311"/></g></mask><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#svgIDa)"/></svg>';
+const String explorePrimaryIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><rect x="0" y="0" width="24" height="24" fill="none" stroke="none" /><path fill="currentColor" d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/><path fill="currentColor" d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>';
+const String exploreSecondaryIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><rect x="0" y="0" width="24" height="24" fill="none" stroke="none" /><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>';

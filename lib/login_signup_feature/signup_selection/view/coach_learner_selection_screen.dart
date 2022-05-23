@@ -19,6 +19,7 @@ class CoachLearnerSelection extends StatelessWidget {
         return BlocListener<CoachLearnerCubit, CoachLearnerState>(
           listener: (context, state) {
             if(state is NotSelectedState){
+              print(animationController);
               animationController!.reset();
               animationController!.forward();
             }

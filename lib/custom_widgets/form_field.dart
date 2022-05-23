@@ -23,8 +23,10 @@ class CustomTextField extends StatelessWidget {
   final double? height;
   final TextInputAction? textInputAction;
   final int? maxLength;
+  final TextEditingController? textEditingController;
 
   const CustomTextField({
+    this.textEditingController,
     this.maxLength,
     this.textInputAction,
     this.height,
@@ -63,6 +65,7 @@ class CustomTextField extends StatelessWidget {
               height: .5.h,
             ),
             TextFormField(
+              controller: textEditingController,
               textCapitalization: TextCapitalization.words,
               maxLength: maxLength??165,
               maxLines: maxLines??1,

@@ -2,11 +2,15 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:health_coach/admin_feature/home/home.dart';
+import 'package:health_coach/coach_feature/home/home_screen.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
 import 'package:health_coach/custom_widgets/form_field.dart';
+import 'package:health_coach/learner_feature/bottom_navigation.dart';
 import 'package:health_coach/login_signup_feature/cubit/login_signup_cubit.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -20,8 +24,25 @@ class LoginScreen extends StatelessWidget {
           Navigator.pop(context);
           return;
         }
-        if (state is NavigateToWhere) {
-          //TODO: navigate to user/admin/coach
+        if (state is UserTypeNavigation) {
+          if (state.userType == UserType.learner) {
+            Navigator.pushAndRemoveUntil(context, PageTransition(child: BottomNavigationLearnerScreen(), type: PageTransitionType.fade), (route) => false);
+          } else if (state.userType == UserType.coach) {
+            Navigator.pushAndRemoveUntil(context, PageTransition(child: CoachHomeScreen(), type: PageTransitionType.fade), (route) => false);
+          } else if (state.userType == UserType.admin) {
+            Navigator.pushAndRemoveUntil(context, PageTransition(child: AdminHomeScreen(), type: PageTransitionType.fade), (route) => false);
+          } else {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content:
+                  Text('Invalid User Credentials', style: GoogleFonts.nunito(fontWeight: FontWeight.bold,fontSize: 12.sp)),
+              backgroundColor: commonGreen,
+              margin: EdgeInsets.symmetric(horizontal: 3.w,vertical: 1.h),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ));
+          }
+          return;
         }
       },
       child: _Scaffold(),
@@ -34,6 +55,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
     Key? key,
   }) : super(key: key);
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  TextEditingController emailTextEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +90,8 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                     child: Column(
                       children: [
                         CustomTextField(
+                          textEditingController: emailTextEditingController,
                           validator: (val) {
-                            // context.read<FirstFormCubit>().checkAge(val);
                             return isEmailValid(val);
                           },
                           delay: 100,
@@ -84,7 +106,6 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                           textInputAction: TextInputAction.done,
                           obscureText: true,
                           validator: (val) {
-                            // context.read<FirstFormCubit>().checkHeight(val);
                             return isPasswordValid(val);
                           },
                           delay: 200,
@@ -115,9 +136,8 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                     ZoomIn(
                       child: CustomElevatedButton(
                         voidCallback: () {
-                          context
-                              .read<LoginSignupCubit>()
-                              .navigateToWhere(_globalKey);
+                          context.read<LoginSignupCubit>().navigateToWhere(
+                              _globalKey, emailTextEditingController.text);
                         },
                         text: "Log In",
                         padding: EdgeInsets.symmetric(
