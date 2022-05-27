@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 
 
 import 'constants/constants.dart';
+import 'custom_classes/custom_scroll_behaviour.dart';
 import 'login_signup_feature/selection/view/login_signup_selection_screen.dart';
 
 
@@ -23,9 +24,10 @@ class MyApp extends StatelessWidget {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return MaterialApp(
+            scrollBehavior: CustomScroll(),
             debugShowMaterialGrid: false,
             debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
+            title: 'Health Coach',
             theme: themeData,
             home: const BottomNavigationLearnerScreen(),
           );

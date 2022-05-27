@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/icons.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
 
@@ -53,7 +54,7 @@ class CustomDropDown extends StatelessWidget {
                     prefixIcon: Padding(
                       padding: EdgeInsets.only(left: 3.w),
                       child: const Iconify(
-                        ageIcon,
+                        CustomIcons.ageIcon,
                         color: commonGreen,
                       ),
                     ),

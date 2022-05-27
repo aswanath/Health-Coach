@@ -5,11 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
 import 'package:health_coach/custom_widgets/form_field.dart';
+import 'package:health_coach/icons.dart';
 import 'package:health_coach/login_signup_feature/signup_form/cubit/first_form_cubit.dart';
 import 'package:health_coach/theme/theme.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
+import 'package:health_coach/custom_classes/validator_mixin.dart';
+
 
 class LearnerFormScreen extends StatelessWidget {
   const LearnerFormScreen({Key? key}) : super(key: key);
@@ -83,7 +86,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                   head: 'Age',
                   hintText: '24',
                   icon: const Iconify(
-                    ageIcon,
+                    CustomIcons.ageIcon,
                     color: commonGreen,
                   ),
                 ),
@@ -98,7 +101,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                   head: 'Height',
                   hintText: '172 cm',
                   icon: const Iconify(
-                    heightIcon,
+                    CustomIcons.heightIcon,
                     color: commonGreen,
                   ),
                 ),
@@ -113,7 +116,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                   head: 'Weight',
                   hintText: '68 kg',
                   icon: const Iconify(
-                    weightIcon,
+                    CustomIcons.weightIcon,
                     color: commonGreen,
                   ),
                 ),

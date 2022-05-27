@@ -7,45 +7,68 @@ import 'package:health_coach/coach_feature/home/home_screen.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
 import 'package:health_coach/custom_widgets/form_field.dart';
+import 'package:health_coach/icons.dart';
 import 'package:health_coach/learner_feature/bottom_navigation.dart';
 import 'package:health_coach/login_signup_feature/cubit/login_signup_cubit.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
+import 'package:health_coach/custom_classes/validator_mixin.dart';
+
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginSignupCubit, LoginSignupState>(
-      listener: (context, state) {
-        if (state is PopBack) {
-          Navigator.pop(context);
-          return;
-        }
-        if (state is UserTypeNavigation) {
-          if (state.userType == UserType.learner) {
-            Navigator.pushAndRemoveUntil(context, PageTransition(child: BottomNavigationLearnerScreen(), type: PageTransitionType.fade), (route) => false);
-          } else if (state.userType == UserType.coach) {
-            Navigator.pushAndRemoveUntil(context, PageTransition(child: CoachHomeScreen(), type: PageTransitionType.fade), (route) => false);
-          } else if (state.userType == UserType.admin) {
-            Navigator.pushAndRemoveUntil(context, PageTransition(child: AdminHomeScreen(), type: PageTransitionType.fade), (route) => false);
-          } else {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-                  Text('Invalid User Credentials', style: GoogleFonts.nunito(fontWeight: FontWeight.bold,fontSize: 12.sp)),
-              backgroundColor: commonGreen,
-              margin: EdgeInsets.symmetric(horizontal: 3.w,vertical: 1.h),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ));
+    return BlocProvider(
+      create: (context) => LoginSignupCubit(),
+      child: BlocListener<LoginSignupCubit, LoginSignupState>(
+        listener: (context, state) {
+          if (state is PopBack) {
+            Navigator.pop(context);
+            return;
           }
-          return;
-        }
-      },
-      child: _Scaffold(),
+          if (state is UserTypeNavigation) {
+            if (state.userType == UserType.learner) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  PageTransition(
+                      child: const BottomNavigationLearnerScreen(),
+                      type: PageTransitionType.fade),
+                      (route) => false);
+            } else if (state.userType == UserType.coach) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  PageTransition(
+                      child: const CoachHomeScreen(),
+                      type: PageTransitionType.fade),
+                      (route) => false);
+            } else if (state.userType == UserType.admin) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  PageTransition(
+                      child: const AdminHomeScreen(),
+                      type: PageTransitionType.fade),
+                      (route) => false);
+            } else {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Invalid User Credentials',
+                    style: GoogleFonts.nunito(
+                        fontWeight: FontWeight.bold, fontSize: 12.sp)),
+                backgroundColor: Colors.red,
+                margin: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ));
+            }
+            return;
+          }
+        },
+        child: _Scaffold(),
+      ),
     );
   }
 }
@@ -76,7 +99,8 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                 Center(
                   child: Text(
                     'Welcome !',
-                    style: Theme.of(context)
+                    style: Theme
+                        .of(context)
                         .textTheme
                         .headlineMedium!
                         .copyWith(color: commonBlack, fontSize: 22.sp),
@@ -98,7 +122,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                           head: 'Email id',
                           hintText: 'John123@gmail.com',
                           icon: const Iconify(
-                            emailIcon,
+                            CustomIcons.emailIcon,
                             color: commonGreen,
                           ),
                         ),
@@ -112,7 +136,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                           head: 'Password',
                           hintText: '********',
                           icon: const Iconify(
-                            passwordIcon,
+                            CustomIcons.passwordIcon,
                             color: commonGreen,
                           ),
                         ),

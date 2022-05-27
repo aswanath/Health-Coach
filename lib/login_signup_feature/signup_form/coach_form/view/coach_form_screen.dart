@@ -7,6 +7,8 @@ import 'package:health_coach/custom_widgets/elevated_button.dart';
 import 'package:health_coach/custom_widgets/form_field.dart';
 import 'package:health_coach/login_signup_feature/signup_form/cubit/first_form_cubit.dart';
 import 'package:sizer/sizer.dart';
+import 'package:health_coach/custom_classes/validator_mixin.dart';
+
 
 import '../../learner_form/view/learner_form_screen.dart';
 

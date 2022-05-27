@@ -7,10 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/custom_widgets/form_field.dart';
 import 'package:health_coach/custom_widgets/nextButton.dart';
+import 'package:health_coach/icons.dart';
 import 'package:health_coach/login_signup_feature/signup_form/cubit/first_form_cubit.dart';
 import 'package:health_coach/theme/theme.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
+import 'package:health_coach/custom_classes/validator_mixin.dart';
+
 
 class SignupFirstFormScreen extends StatelessWidget {
   const SignupFirstFormScreen({Key? key}) : super(key: key);
@@ -135,7 +138,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                       head: 'Name',
                       hintText: 'John',
                       icon: const Iconify(
-                        nameIcon,
+                        CustomIcons.nameIcon,
                         color: commonGreen,
                       ),
                       delay: 100,
@@ -153,7 +156,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                       head: 'Email',
                       hintText: 'john123@gmail.com',
                       icon: const Iconify(
-                        emailIcon,
+                        CustomIcons.emailIcon,
                         color: commonGreen,
                       ),
                     ),
@@ -167,7 +170,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                       hintText: '9876543210',
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       icon: const Iconify(
-                        mobileIcon,
+                        CustomIcons.mobileIcon,
                         color: commonGreen,
                       ),
                       textInputType: TextInputType.number,
@@ -183,7 +186,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                       head: 'Password',
                       hintText: 'John@123',
                       icon: const Iconify(
-                        passwordIcon,
+                        CustomIcons.passwordIcon,
                         color: commonGreen,
                       ),
                     ),

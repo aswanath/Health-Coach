@@ -10,6 +10,16 @@ ThemeData themeData = ThemeData(
     size: 28.sp
   ),
     textTheme: TextTheme(
+      labelMedium: GoogleFonts.nunito(
+        fontSize: 16.sp,
+        color: commonBlack,
+        fontWeight: FontWeight.bold
+      ),
+      labelSmall: GoogleFonts.nunito(
+          fontSize: 10.sp,
+          color: commonBlack,
+          fontWeight: FontWeight.normal
+      ),
       displayLarge: GoogleFonts.monoton(
           color: commonGreen,
           fontSize: 30.sp,

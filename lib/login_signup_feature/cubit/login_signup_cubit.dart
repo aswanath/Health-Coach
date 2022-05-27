@@ -1,7 +1,7 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/custom_classes/validator_mixin.dart';
 
 
 part 'login_signup_state.dart';

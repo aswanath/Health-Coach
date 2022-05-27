@@ -6,6 +6,7 @@ import 'package:health_coach/login_signup_feature/signup_form/coach_form/view/co
 import 'package:health_coach/login_signup_feature/signup_form/learner_form/view/learner_form_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:health_coach/custom_classes/validator_mixin.dart';
 
 part 'first_form_state.dart';
 
