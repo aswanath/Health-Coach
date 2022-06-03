@@ -4,6 +4,12 @@ import 'package:health_coach/constants/constants.dart';
 import 'package:sizer/sizer.dart';
 
 ThemeData themeData = ThemeData(
+  appBarTheme: AppBarTheme(
+    foregroundColor: commonGreen,
+    backgroundColor: commonWhite,
+    elevation: 0,
+    iconTheme: IconThemeData(size: 24.sp)
+  ),
   scaffoldBackgroundColor: commonWhite,
   iconTheme: IconThemeData(
     color: commonGreen,

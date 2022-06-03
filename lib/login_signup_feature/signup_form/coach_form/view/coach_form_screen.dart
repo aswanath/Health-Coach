@@ -30,7 +30,7 @@ class CoachFormScreen extends StatelessWidget {
               builder: (_) {
                 return BlocProvider.value(
                   value: context.read<FirstFormCubit>(),
-                  child: RegisterSuccessPopupDialog(),
+                  child: const RegisterSuccessPopupDialog(),
                 );
               });
         }

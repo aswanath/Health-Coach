@@ -1,9 +1,9 @@
-import 'dart:ui';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/custom_widgets/appbar.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
 import 'package:health_coach/learner_feature/home/unlocked_course/bloc/buy_course_bloc.dart';
 import 'package:hidable/hidable.dart';
@@ -25,7 +25,7 @@ class RecommendCourses extends StatelessWidget {
                 barrierDismissible: false,
                 context: context,
                 builder: (_) {
-                  return _BuySuccessDialog();
+                  return const _BuySuccessDialog();
                 });
           }
         },
@@ -54,7 +54,7 @@ class _Scaffold extends StatelessWidget {
               elevation: 0,
               iconTheme: IconThemeData(color: commonGreen, size: 24.sp),
               titleSpacing: 0,
-              title: _AppBarTitle(),
+              title: const AppBarTitle(title: 'Cardio Hard', author: 'Rajesh Kumar'),
             ),
           ),
         ),
@@ -68,7 +68,7 @@ class _Scaffold extends StatelessWidget {
                 SizedBox(
                   height: 2.h,
                 ),
-                _CarouselItem(),
+                const _CarouselItem(),
                 SizedBox(
                   height: 3.h,
                 ),
@@ -223,30 +223,6 @@ class _CarouselItem extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _AppBarTitle extends StatelessWidget {
-  const _AppBarTitle({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text('Cardio Hard',
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium!
-                .copyWith(fontSize: 17.sp)),
-        Text(
-          'Rajesh Kumar',
-          style: Theme.of(context).textTheme.labelSmall!.copyWith(height: .8),
-        )
-      ],
     );
   }
 }

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/icons.dart';
-import 'package:health_coach/learner_feature/explore/learner_explore_screen.dart';
+import 'package:health_coach/learner_feature/explore/view/learner_explore_screen.dart';
 import 'package:health_coach/learner_feature/home/view/learner_home_screen.dart';
-import 'package:health_coach/learner_feature/me/learner_me_screen.dart';
+import 'package:health_coach/learner_feature/me/view/learner_me_screen.dart';
 import 'package:hidable/hidable.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
@@ -52,37 +52,37 @@ class _Scaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          BlocBuilder<NavigationBarCubit, NavigationBarState>(
-              builder: (context, state) {
-            int index = 0;
-            if (state is NavigationBarChanged) {
-              index = state.currentIndex;
-            }
-            return screens[index];
-          }),
-          BlocBuilder<NavigationBarCubit, NavigationBarState>(
-            builder: (context, state) {
-              ScrollController _scrollController = homeScrollController;
-              if (state is NavigationBarChanged) {
-                if (state.currentIndex == 0) {
-                  _scrollController = homeScrollController;
-                } else if (state.currentIndex == 1) {
-                  _scrollController = exploreScrollController;
-                }
-              }
-              return Hidable(
-                child: _CustomBottomBar(),
-                controller: _scrollController,
-                size: 11.3.h,
-              );
-            },
+          body: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              BlocBuilder<NavigationBarCubit, NavigationBarState>(
+                  builder: (context, state) {
+                    int index = 0;
+                    if (state is NavigationBarChanged) {
+                      index = state.currentIndex;
+                    }
+                    return screens[index];
+                  }),
+              BlocBuilder<NavigationBarCubit, NavigationBarState>(
+                builder: (context, state) {
+                  ScrollController _scrollController = homeScrollController;
+                  if (state is NavigationBarChanged) {
+                    if (state.currentIndex == 0) {
+                      _scrollController = homeScrollController;
+                    } else if (state.currentIndex == 1) {
+                      _scrollController = exploreScrollController;
+                    }
+                  }
+                  return Hidable(
+                    child: _CustomBottomBar(),
+                    controller: _scrollController,
+                    size: 11.3.h,
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-    ));
+        ));
   }
 }
 
@@ -90,7 +90,7 @@ class _CustomBottomBar extends StatelessWidget {
   _CustomBottomBar({
     Key? key,
   }) : super(key: key);
-  static const Duration _scaleDuration = Duration(milliseconds: 600);
+  static const Duration _scaleDuration = Duration(milliseconds: 300);
 
   double _homeScale = 1.2;
   String _home = CustomIcons.homeSecondaryIcon;

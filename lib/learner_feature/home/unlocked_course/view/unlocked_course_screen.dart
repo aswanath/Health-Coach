@@ -32,7 +32,7 @@ class _Scaffold extends StatelessWidget {
                 elevation: 0,
                 iconTheme: IconThemeData(color: commonGreen, size: 24.sp),
                 titleSpacing: 0,
-                title: _AppBarTitle(),
+                title: const _AppBarTitle(),
               ),
               controller: _scrollController),
         ),
@@ -43,7 +43,7 @@ class _Scaffold extends StatelessWidget {
             SizedBox(
               height: 2.h,
             ),
-            _CarouselItem(),
+            const _CarouselItem(),
             SizedBox(
               height: 3.h,
             ),

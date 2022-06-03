@@ -47,7 +47,7 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
           PageTransition(
               child: BlocProvider.value(
                 value: context.read<FirstFormCubit>(),
-                child: CoachFormScreen(),
+                child: const CoachFormScreen(),
               ),
               type: PageTransitionType.fade));
     } else if (result == "Learner") {
@@ -57,7 +57,7 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
           PageTransition(
               child: BlocProvider.value(
                 value: context.read<FirstFormCubit>(),
-                child: LearnerFormScreen(),
+                child: const LearnerFormScreen(),
               ),
               type: PageTransitionType.fade));
     }
@@ -66,7 +66,7 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
   void gotToLogin(BuildContext context) {
     Navigator.pushAndRemoveUntil(
         context,
-        PageTransition(child: LoginScreen(), type: PageTransitionType.fade),
+        PageTransition(child: const LoginScreen(), type: PageTransitionType.fade),
         (route) => false);
   }
 

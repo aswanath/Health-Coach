@@ -11,25 +11,38 @@ class CustomElevatedButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final Color? borderColor;
   final Widget? child;
+  final double? fontSize;
 
   const CustomElevatedButton(
-      {Key? key, required this.voidCallback,this.child, required this.text, this.foregroundColor, this.backgroundColor,this.padding,this.borderColor})
+      {Key? key,
+      required this.voidCallback,
+      this.child,
+      required this.text,
+      this.foregroundColor,
+      this.backgroundColor,
+      this.padding,
+      this.borderColor,
+      this.fontSize})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: ButtonStyle(
-        elevation: MaterialStateProperty.all(0),
-        side: MaterialStateProperty.all(BorderSide(color: borderColor??Colors.transparent)),
-        shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(11))),
-        padding: MaterialStateProperty.all(padding),
-        backgroundColor: MaterialStateProperty.all(backgroundColor??commonGreen)
-      ),
+        style: ButtonStyle(
+            elevation: MaterialStateProperty.all(0),
+            side: MaterialStateProperty.all(
+                BorderSide(color: borderColor ?? Colors.transparent)),
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(11))),
+            padding: MaterialStateProperty.all(padding),
+            backgroundColor:
+                MaterialStateProperty.all(backgroundColor ?? commonGreen)),
         onPressed: voidCallback,
-        child: child??Text(
-          text,
-          style: themeData.textTheme.headlineMedium!.copyWith(color: foregroundColor),
-        ));
+        child: child ??
+            Text(
+              text,
+              style: themeData.textTheme.headlineMedium!
+                  .copyWith(color: foregroundColor, fontSize: fontSize),
+            ));
   }
 }

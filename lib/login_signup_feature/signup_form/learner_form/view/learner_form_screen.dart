@@ -32,12 +32,12 @@ class LearnerFormScreen extends StatelessWidget {
               builder: (_) {
                 return BlocProvider.value(
                   value: context.read<FirstFormCubit>(),
-                  child: RegisterSuccessPopupDialog(),
+                  child: const RegisterSuccessPopupDialog(),
                 );
               });
         }
       },
-      child: _Scaffold(),
+      child: const _Scaffold(),
     );
   }
 }
@@ -148,7 +148,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                     ),
                     Padding(
                       padding: EdgeInsets.only(right: 1.w),
-                      child: _RegisterButton(),
+                      child: const _RegisterButton(),
                     )
                   ],
                 ),
@@ -181,7 +181,6 @@ class _RegisterButton extends StatelessWidget {
           return ZoomIn(
             child: CustomElevatedButton(
               voidCallback: () {
-                print("presign");
                 context.read<FirstFormCubit>().registerSuccessDialog();
               },
               text: 'Register',

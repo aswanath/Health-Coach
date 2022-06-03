@@ -29,7 +29,7 @@ class SelectionScreen extends StatelessWidget {
                 PageTransition(
                     child: BlocProvider.value(
                       value: context.read<LoginSignupCubit>(),
-                      child: LoginScreen(),
+                      child: const LoginScreen(),
                     ),
                     type: PageTransitionType.fade));
             return;
@@ -46,7 +46,7 @@ class SelectionScreen extends StatelessWidget {
         child: SafeArea(
           child: Scaffold(
             body: Stack(
-              children: [_BackgroundImage(), _Blur(), _Texts()],
+              children: [const _BackgroundImage(), const _Blur(), _Texts()],
             ),
           ),
         ),

@@ -7,10 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/learner_feature/home/cubit/carousel_slider_cubit.dart';
+import 'package:health_coach/learner_feature/home/locked_course/view/recommended_courses.dart';
 import 'package:health_coach/learner_feature/home/model/home_model.dart';
 import 'package:health_coach/learner_feature/home/unlocked_course/view/unlocked_course_screen.dart';
-import 'package:health_coach/learner_feature/locked_course/view/recommended_courses.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -37,7 +36,7 @@ class LearnerHomeScreen extends StatelessWidget {
 class _Scaffold extends StatelessWidget {
   final ScrollController scrollController;
 
-  _Scaffold({
+  const _Scaffold({
     required this.scrollController,
     Key? key,
   }) : super(key: key);
@@ -65,11 +64,11 @@ class _Scaffold extends StatelessWidget {
             height: 2.h,
           ),
           const _WeightGraph(),
-          _HorizontalScrollView(
+          const HorizontalScrollView(
             title: 'Your Courses',
             isUnlocked: true,
           ),
-          _HorizontalScrollView(title: 'Courses you might like',isUnlocked: false,),
+          const HorizontalScrollView(title: 'Courses you might like',isUnlocked: false,),
           SizedBox(
             height: 2.5.h,
           ),
@@ -79,11 +78,11 @@ class _Scaffold extends StatelessWidget {
   }
 }
 
-class _HorizontalScrollView extends StatelessWidget {
+class HorizontalScrollView extends StatelessWidget {
   final String title;
   final bool isUnlocked;
 
-  const _HorizontalScrollView({
+  const HorizontalScrollView({
     required this.isUnlocked,
     required this.title,
     Key? key,
@@ -114,8 +113,8 @@ class _HorizontalScrollView extends StatelessWidget {
               );
             },
             itemBuilder: (context, index) {
-              return GestureDetector(child:  _HorizontalScrollItem(),onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> isUnlocked?UnlockedCourse(heroTag: index,):RecommendCourses()));
+              return GestureDetector(child:  const _HorizontalScrollItem(),onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> isUnlocked?UnlockedCourse(heroTag: index,):const RecommendCourses()));
               },);
             },
           ),

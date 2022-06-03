@@ -5,6 +5,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/custom_widgets/custom_circle_avatar.dart';
+import 'package:health_coach/learner_feature/explore/blog_details/view/blog_read_details.dart';
+import 'package:health_coach/learner_feature/explore/coach_details/view/coach_read_details.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:math' as math;
 
@@ -25,7 +29,7 @@ class LearnerExploreScreen extends StatelessWidget {
 class _Scaffold extends StatelessWidget {
   final ScrollController scrollController;
 
-  _Scaffold({
+  const _Scaffold({
     required this.scrollController,
     Key? key,
   }) : super(key: key);
@@ -43,7 +47,7 @@ class _Scaffold extends StatelessWidget {
           ),
           SlideInLeft(
             child: Padding(
-              padding:  EdgeInsets.only(left: 4.w),
+              padding: EdgeInsets.only(left: 4.w),
               child: Text.rich(TextSpan(
                   text: 'Health',
                   style: Theme.of(context)
@@ -65,7 +69,7 @@ class _Scaffold extends StatelessWidget {
             height: 2.h,
           ),
           Padding(
-            padding:  EdgeInsets.only(left: 4.w,right: 4.w),
+            padding: EdgeInsets.only(left: 4.w, right: 4.w),
             child: StaggeredGridView.builder(
               shrinkWrap: true,
               itemCount: 10,
@@ -75,8 +79,17 @@ class _Scaffold extends StatelessWidget {
                 return FadeInDown(
                   delay: Duration(milliseconds: index * 100),
                   duration: const Duration(milliseconds: 500),
-                  child: _BlogCustomItem(
-                    description: 'Hello ' * ((index + 1) * 4),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: const BlogReadDetails(),
+                              type: PageTransitionType.fade));
+                    },
+                    child: _BlogCustomItem(
+                      description: 'Hello ' * ((index + 1) * 4),
+                    ),
                   ),
                 );
               },
@@ -92,7 +105,7 @@ class _Scaffold extends StatelessWidget {
             ),
           ),
           Padding(
-            padding:  EdgeInsets.only(left: 4.w),
+            padding: EdgeInsets.only(left: 4.w),
             child: Text.rich(TextSpan(
                 text: 'Health',
                 style: Theme.of(context)
@@ -112,19 +125,27 @@ class _Scaffold extends StatelessWidget {
           SizedBox(
             height: 2.h,
           ),
-           SizedBox(
-             height: 32.h,
-             child: ListView.builder(
-                 padding:  EdgeInsets.only(left: 4.w,right: 1.w),
-               itemCount: 10,
-                 scrollDirection: Axis.horizontal,
-                 itemBuilder: (context,index){
-               return Padding(
-                 padding:  EdgeInsets.only(right: 3.w),
-                 child: _CoachItem(),
-               );
-             }),
-           ),
+          SizedBox(
+            height: 32.h,
+            child: ListView.builder(
+                padding: EdgeInsets.only(left: 4.w, right: 1.w),
+                itemCount: 10,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(right: 3.w),
+                    child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: const CoachReadDetails(),
+                                  type: PageTransitionType.fade));
+                        },
+                        child: const _CoachItem()),
+                  );
+                }),
+          ),
           SizedBox(
             height: 2.h,
           ),
@@ -146,7 +167,7 @@ class _CoachItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: Stack(
         children: [
-          _StackElementCoach(),
+          const _StackElementCoach(),
           Container(
             padding: EdgeInsets.only(
                 left: 2.5.w, right: 2.w, top: .5.h, bottom: 1.5.h),
@@ -157,7 +178,9 @@ class _CoachItem extends StatelessWidget {
                 color: Colors.transparent),
             child: Column(
               children: [
-                SizedBox(height: 2.h,),
+                SizedBox(
+                  height: 2.h,
+                ),
                 Stack(
                   children: [
                     Container(
@@ -177,13 +200,29 @@ class _CoachItem extends StatelessWidget {
                     )
                   ],
                 ),
-                SizedBox(height: 1.h,),
-                Text('Aswanath C K',style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 14.sp),),
-                Text('Yoga Coach',style: Theme.of(context).textTheme.labelSmall,),
-                SizedBox(height: 1.h,),
+                SizedBox(
+                  height: 1.h,
+                ),
+                Text(
+                  'Aswanath C K',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(fontSize: 14.sp),
+                ),
+                Text(
+                  'Yoga Coach',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
                 Text(
                   '''I am very passionate about my courses and I love to teach everyone.''',
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 12.sp),
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(fontSize: 12.sp),
                   textAlign: TextAlign.center,
                   maxLines: 4,
                 ),
@@ -193,27 +232,6 @@ class _CoachItem extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class HalfCircle extends CustomPainter{
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-        ..strokeWidth = 3
-      ..style= PaintingStyle.stroke
-    ..color = commonGreen;
-
-    canvas.drawArc(Rect.fromCenter(
-      center: Offset(size.height / 2, size.width / 2),
-      height: size.height*1.1,
-      width: size.width*1.1,
-    ), 4.5, 4.5, false, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }
 

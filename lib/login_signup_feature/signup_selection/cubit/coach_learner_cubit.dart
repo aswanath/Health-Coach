@@ -34,7 +34,7 @@ class CoachLearnerCubit extends Cubit<CoachLearnerState> {
           context,
           PageTransition(
             ///TODO: change to original  one.
-              child: SignupFirstFormScreen(), type: PageTransitionType.fade));
+              child: const SignupFirstFormScreen(), type: PageTransitionType.fade));
     }else{
       emit(NotSelectedState());
     }

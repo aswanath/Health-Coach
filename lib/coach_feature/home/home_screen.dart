@@ -5,6 +5,6 @@ class CoachHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Scaffold(body: Text("coach"),));
+    return const SafeArea(child: Scaffold(body: Text("coach"),));
   }
 }
