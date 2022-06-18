@@ -16,11 +16,13 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
   bool mobileCheck = false;
   bool passwordCheck = false;
   bool ageCheck = false;
-  bool heightCheck = true;
-  bool weightCheck = true;
+  bool heightCheck = false;
+  bool weightCheck = false;
+  bool healthCheck = false;
   bool qualificationCheck = false;
   bool streamCheck = false;
   bool aboutCheck = false;
+  bool userNameCheck = false;
 
   FirstFormCubit() : super(ImageInitialState(imagePath: avatarList[3]));
 
@@ -66,26 +68,21 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
   void gotToLogin(BuildContext context) {
     Navigator.pushAndRemoveUntil(
         context,
-        PageTransition(child: const LoginScreen(), type: PageTransitionType.fade),
+        PageTransition(
+            child: const LoginScreen(), type: PageTransitionType.fade),
         (route) => false);
   }
 
-  void registerSuccessDialog() =>
-    emit(RegisterSuccessPopup());
+  void registerSuccessDialog() => emit(RegisterSuccessPopup());
 
-  void registerSuccessDialogCoach()=> emit(RegisterSuccessPopUpCoach());
-
-  void popBack() => emit(PopBack());
-
-  void popBackLearner() => emit(PopBackLearner());
-
-  void popBackCoach() => emit(PopBackCoach());
+  void registerSuccessDialogCoach() => emit(RegisterSuccessPopUpCoach());
 
   void enableNextButton() {
     if (nameCheck == true &&
         emailCheck == true &&
         mobileCheck == true &&
-        passwordCheck == true) {
+        passwordCheck == true &&
+        userNameCheck == true) {
       emit(EnableNextButton());
     } else {
       emit(DisableNextButton());
@@ -93,17 +90,19 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
   }
 
   void enableNextButtonLearner() {
-    if (ageCheck == true && weightCheck == true && heightCheck == true) {
+    if (ageCheck == true && weightCheck == true && heightCheck == true && healthCheck == true) {
       emit(EnableNextButtonLearner());
     } else {
       emit(DisableNextButtonLearner());
     }
   }
 
-  void enableNextButtonCoach(){
-    if(qualificationCheck == true&&streamCheck==true&&aboutCheck==true){
-     emit(EnableNextButtonCoach());
-    }else{
+  void enableNextButtonCoach() {
+    if (qualificationCheck == true &&
+        streamCheck == true &&
+        aboutCheck == true) {
+      emit(EnableNextButtonCoach());
+    } else {
       emit(DisableNextButtonCoach());
     }
   }
@@ -114,6 +113,16 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
       ageCheck = true;
     } else {
       ageCheck = false;
+    }
+    enableNextButtonLearner();
+  }
+
+  void checkHealth(String? value) {
+    final result = isHealthValid(value);
+    if (result == null) {
+      healthCheck = true;
+    } else {
+      healthCheck = false;
     }
     enableNextButtonLearner();
   }
@@ -148,6 +157,16 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
     enableNextButton();
   }
 
+  void checkUserName(String? value) {
+    final result = isUserNameValid(value);
+    if (result == null) {
+      userNameCheck = true;
+    } else {
+      userNameCheck = false;
+    }
+    enableNextButton();
+  }
+
   void checkEmail(String? value) {
     final result = isEmailValid(value);
     if (result == null) {
@@ -178,31 +197,31 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
     enableNextButton();
   }
 
-  void checkQualification(String? value){
+  void checkQualification(String? value) {
     final result = isQualificationValid(value);
-    if(result == null){
+    if (result == null) {
       qualificationCheck = true;
-    }else{
+    } else {
       qualificationCheck = false;
     }
     enableNextButtonCoach();
   }
 
-  void checkStream(String? value){
-     final result = isStreamValid(value);
-     if(result == null){
-       streamCheck = true;
-     }else{
-       streamCheck = false;
-     }
-     enableNextButtonCoach();
+  void checkStream(String? value) {
+    final result = isStreamValid(value);
+    if (result == null) {
+      streamCheck = true;
+    } else {
+      streamCheck = false;
+    }
+    enableNextButtonCoach();
   }
 
-  void checkAbout(String? value){
+  void checkAbout(String? value) {
     final result = isAboutValid(value);
-    if(result == null){
+    if (result == null) {
       aboutCheck = true;
-    }else{
+    } else {
       aboutCheck = false;
     }
     enableNextButtonCoach();

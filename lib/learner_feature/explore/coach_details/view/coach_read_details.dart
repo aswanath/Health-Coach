@@ -31,17 +31,12 @@ class _Scaffold extends StatelessWidget {
         preferredSize: Size(100.w, 6.5.h),
         child: Hidable(
           controller: _scrollController,
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            iconTheme: IconThemeData(color: commonGreen, size: 24.sp),
-            titleSpacing: 0,
-            title: const AppBarTitle(),
-          ),
+          child: AppBar(),
         ),
       ),
       body: ListView(
         children: [
+          SizedBox(height: 1.5.h,),
           Align(
             child: Stack(
               children: [

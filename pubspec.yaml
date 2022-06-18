@@ -37,7 +37,6 @@ dependencies:
   google_fonts: ^2.3.2
   animate_do: ^2.1.0
   flutter_bloc: ^8.0.1
-  bloc: ^8.0.3
   page_transition: ^2.0.5
   sizer: ^2.0.15
   carousel_slider: ^4.1.1
@@ -51,6 +50,10 @@ dependencies:
   syncfusion_flutter_charts: ^20.1.56
   hidable: ^1.0.2
   flutter_staggered_grid_view: ^0.4.0
+  internet_connection_checker: ^0.0.1+4
+  overlay_support: ^2.0.1
+  dio: ^4.0.6
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:

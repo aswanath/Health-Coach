@@ -10,9 +10,11 @@ import 'package:health_coach/learner_feature/home/cubit/carousel_slider_cubit.da
 import 'package:health_coach/learner_feature/home/locked_course/view/recommended_courses.dart';
 import 'package:health_coach/learner_feature/home/model/home_model.dart';
 import 'package:health_coach/learner_feature/home/unlocked_course/view/unlocked_course_screen.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:http/http.dart' as http;
 
 class LearnerHomeScreen extends StatelessWidget {
   final ScrollController scrollController;
@@ -53,7 +55,7 @@ class _Scaffold extends StatelessWidget {
           SizedBox(
             height: 2.h,
           ),
-          _GreetingText(),
+          GreetingText(),
           SizedBox(height: 2.5.h),
           const _Carousel(),
           SizedBox(
@@ -68,7 +70,10 @@ class _Scaffold extends StatelessWidget {
             title: 'Your Courses',
             isUnlocked: true,
           ),
-          const HorizontalScrollView(title: 'Courses you might like',isUnlocked: false,),
+          const HorizontalScrollView(
+            title: 'Courses you might like',
+            isUnlocked: false,
+          ),
           SizedBox(
             height: 2.5.h,
           ),
@@ -113,9 +118,20 @@ class HorizontalScrollView extends StatelessWidget {
               );
             },
             itemBuilder: (context, index) {
-              return GestureDetector(child:  const _HorizontalScrollItem(),onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> isUnlocked?UnlockedCourse(heroTag: index,):const RecommendCourses()));
-              },);
+              return GestureDetector(
+                child: const _HorizontalScrollItem(),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          child: isUnlocked
+                              ? UnlockedCourse(
+                                  heroTag: index,
+                                )
+                              : const RecommendCourses(),
+                          type: PageTransitionType.fade));
+                },
+              );
             },
           ),
         )
@@ -140,8 +156,8 @@ class _HorizontalScrollItem extends StatelessWidget {
           height: 25.h,
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20)),
+                topRight: Radius.circular(20),
+              ),
               color: commonGreen),
           child: ClipRRect(
             child: Image.asset(
@@ -149,21 +165,21 @@ class _HorizontalScrollItem extends StatelessWidget {
               fit: BoxFit.cover,
             ),
             borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(20),
-                bottomRight: Radius.circular(20)),
+              topRight: Radius.circular(20),
+            ),
           ),
         ),
         Container(
           decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(bottomRight: Radius.circular(20)),
-              color: commonBlack),
+              borderRadius: BorderRadius.zero, color: commonBlack),
           padding: const EdgeInsets.only(left: 3, right: 3, bottom: 3),
           height: 9.h,
           width: 40.w,
           child: Container(
             decoration: const BoxDecoration(
-                borderRadius:
-                    BorderRadius.only(bottomRight: Radius.circular(20)),
+                borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10)),
                 color: commonWhite),
             padding: EdgeInsets.symmetric(horizontal: .8.w, vertical: .1.h),
             child: AutoSizeText(
@@ -271,24 +287,23 @@ class _WeightGraph extends StatelessWidget {
   }
 }
 
-class _GreetingText extends StatelessWidget {
-  _GreetingText({
-    Key? key,
-  }) : super(key: key);
+class GreetingText extends StatelessWidget {
+  final String? name;
+
+  GreetingText({Key? key, this.name}) : super(key: key);
   String greeting = '';
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CarouselSliderCubit, CarouselSliderChangedState>(
       builder: (context, state) {
-        print("coming here");
         greeting = '';
         if (state is GreetingChanged) {
           greeting = state.greeting;
         }
         return Center(
           child: Text(
-            'Good $greeting, Aswanath 👋',
+            'Good $greeting, ${name ?? 'Aswanath'} 👋',
             style: Theme.of(context)
                 .textTheme
                 .headlineMedium!
@@ -349,26 +364,28 @@ class _Carousel extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(40),
           child: CarouselSlider(
-              items: const [
-                _CarouselItem(
-                  headline: 'Be younger with Yoga',
-                ),
-                _CarouselItem(
-                  headline: 'How to loss fat',
-                ),
-                _CarouselItem(headline: 'Six pack in 4 weeks'),
-                _CarouselItem(
-                  headline: 'This will help you stay longer',
-                ),
-              ],
-              options: CarouselOptions(
-                  viewportFraction: 1,
-                  padEnds: false,
-                  autoPlayCurve: Curves.decelerate,
-                  autoPlay: true,
-                  onPageChanged: (index, reason) {
-                    context.read<CarouselSliderCubit>().changeIndex(index);
-                  })),
+            items: const [
+              _CarouselItem(
+                headline: 'Be younger with Yoga',
+              ),
+              _CarouselItem(
+                headline: 'How to loss fat',
+              ),
+              _CarouselItem(headline: 'Six pack in 4 weeks'),
+              _CarouselItem(
+                headline: 'This will help you stay longer',
+              ),
+            ],
+            options: CarouselOptions(
+              viewportFraction: 1,
+              padEnds: false,
+              autoPlayCurve: Curves.decelerate,
+              autoPlay: true,
+              onPageChanged: (index, reason) {
+                context.read<CarouselSliderCubit>().changeIndex(index);
+              },
+            ),
+          ),
         ),
       ),
     );

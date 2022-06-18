@@ -10,6 +10,22 @@ mixin InputValidatorMixin {
     }
   }
 
+  String? isUserNameValid(String? value){
+    if(value!.isEmpty){
+      return "username can't be empty";
+    }else{
+      return null;
+    }
+  }
+
+  String? isHealthValid(String? value){
+    if(value!.isEmpty){
+      return "Description can't be empty";
+    }else{
+      return null;
+    }
+  }
+
   String? isEmailValid(String? value) {
     String pattern =
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
@@ -109,19 +125,4 @@ mixin InputValidatorMixin {
       return null;
     }
   }
-
-
-  ///password validation for signup with minimum 8 characters and maximum 20 characters and at least one uppercase, one lowercase, one number and one special character
- // String? isPasswordValidSignup(String? value) {
- //    if (value!.length < 8) {
- //      return "Password must contain 8 characters";
- //    } else if (value.length > 20) {
- //      return "Password must contain 20 characters";
- //    } else if (!RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,20}$').hasMatch(value)) {
- //      return "Password must contain at least one uppercase, one lowercase, one number and one special character";
- //    } else {
- //      return null;
- //    }
- //  }
-
 }

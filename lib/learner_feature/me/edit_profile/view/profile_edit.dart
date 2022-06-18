@@ -67,9 +67,6 @@ class EditProfileScreen extends StatelessWidget {
             Navigator.pop(context);
             return;
           }
-          if(state is PopBack){
-            Navigator.pop(context);
-          }
         },
         child: _Scaffold(),
       ),

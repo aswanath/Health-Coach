@@ -9,7 +9,6 @@ import 'package:health_coach/login_signup_feature/signup_form/cubit/first_form_c
 import 'package:sizer/sizer.dart';
 import 'package:health_coach/custom_classes/validator_mixin.dart';
 
-
 import '../../learner_form/view/learner_form_screen.dart';
 
 class CoachFormScreen extends StatelessWidget {
@@ -19,9 +18,6 @@ class CoachFormScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<FirstFormCubit, FirstFormState>(
       listener: (context, state) {
-        if (state is PopBackCoach) {
-          Navigator.pop(context);
-        }
         if (state is RegisterSuccessPopUpCoach) {
           showDialog(
               useRootNavigator: false,
@@ -103,25 +99,27 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                 hintText: 'A few words about you...',
                 maxLines: 5,
               ),
-                SizedBox(height: 22.h,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ZoomIn(
-                      child: CustomElevatedButton(
-                          voidCallback: () {
-                            context.read<FirstFormCubit>().popBackCoach();
-                          },
-                          text: 'Back',
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: commonGreen),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 1.w),
-                      child: ZoomIn(child: const _RegisterButton()),
-                    )
-                  ],
-                ),
+              SizedBox(
+                height: 22.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ZoomIn(
+                    child: CustomElevatedButton(
+                        voidCallback: () {
+                          Navigator.pop(context);
+                        },
+                        text: 'Back',
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: commonGreen),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(right: 1.w),
+                    child: ZoomIn(child: const _RegisterButton()),
+                  )
+                ],
+              ),
             ],
           ),
         ),

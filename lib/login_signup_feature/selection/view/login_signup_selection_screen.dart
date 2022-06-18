@@ -3,9 +3,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart' as getx;
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
-import 'package:health_coach/login_signup_feature/cubit/login_signup_cubit.dart';
+import 'package:health_coach/internet_connection/internet_bloc.dart';
+import 'package:health_coach/login_signup_feature/bloc/login_signup_bloc.dart';
 import 'package:health_coach/login_signup_feature/login/view/login_screen.dart';
 import 'package:health_coach/login_signup_feature/signup_selection/view/coach_learner_selection_screen.dart';
 import 'package:health_coach/splash/view/splash.dart';
@@ -13,28 +15,34 @@ import 'package:health_coach/theme/theme.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
-
 class SelectionScreen extends StatelessWidget {
   const SelectionScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginSignupCubit(),
-      child: BlocListener<LoginSignupCubit, LoginSignupState>(
+      create: (context) => LoginSignupBloc(),
+      child: BlocListener<LoginSignupBloc, LoginSignupState>(
         listener: (context, state) {
           if (state is NavigateToLoginScreen) {
-            Navigator.push(
-                context,
-                PageTransition(
-                    child: BlocProvider.value(
-                      value: context.read<LoginSignupCubit>(),
-                      child: const LoginScreen(),
-                    ),
-                    type: PageTransitionType.fade));
+            // Navigator.push(
+            //   context,
+            //   PageTransition(
+            //       child: BlocProvider.value(
+            //         value: context.read<LoginSignupBloc>(),
+            //         child: const LoginScreen(),
+            //       ),
+            //       type: PageTransitionType.fade),
+            // );
+            getx.Get.to(
+                BlocProvider.value(
+                  value: context.read<LoginSignupBloc>(),
+                  child:const LoginScreen(),
+                ),
+                transition: getx.Transition.downToUp,duration: const Duration(milliseconds: 500));
             return;
           }
-          if (state is NavigateToSignupScreen) {
+          if (state is NavigateToSignUpScreen) {
             Navigator.push(
                 context,
                 PageTransition(
@@ -105,7 +113,7 @@ class _Texts extends StatelessWidget {
             children: [
               CustomElevatedButton(
                 voidCallback: () {
-                  context.read<LoginSignupCubit>().navigateLogin();
+                  context.read<LoginSignupBloc>().add(NavigateToLogin());
                 },
                 text: 'Log In',
                 padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 7.w),
@@ -115,7 +123,7 @@ class _Texts extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 borderColor: commonGreen,
                 voidCallback: () {
-                  context.read<LoginSignupCubit>().navigateSignup();
+                  context.read<LoginSignupBloc>().add(NavigateToSignup());
                 },
                 text: 'Sign Up',
                 padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),

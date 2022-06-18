@@ -33,15 +33,20 @@ class _Scaffold extends StatelessWidget {
             height: 3.h,
           ),
           Align(
-              child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            child: const EditProfileScreen(),
-                            type: PageTransitionType.fade));
-                  },
-                  child: const _ImageEdit())),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        child: const EditProfileScreen(),
+                        type: PageTransitionType.fade));
+              },
+              child: const Hero(
+                tag: 'edit',
+                child: _ImageEdit(),
+              ),
+            ),
+          ),
           SizedBox(
             height: 1.h,
           ),
@@ -65,7 +70,8 @@ class _Scaffold extends StatelessWidget {
               Navigator.push(
                   context,
                   PageTransition(
-                      child: const MyCoursesScreen(), type: PageTransitionType.fade));
+                      child: const MyCoursesScreen(),
+                      type: PageTransitionType.fade));
             },
           ),
           const CustomListTile(

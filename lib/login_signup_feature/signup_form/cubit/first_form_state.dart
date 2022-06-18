@@ -30,12 +30,6 @@ class EnableNextButtonCoach extends FirstFormState{}
 
 class DisableNextButtonCoach extends FirstFormState{}
 
-class PopBack extends FirstFormState{}
-
-class PopBackLearner extends FirstFormState{}
-
-class PopBackCoach extends FirstFormState{}
-
 class RegisterSuccessPopup extends FirstFormState{}
 
 class RegisterSuccessPopUpCoach extends FirstFormState{}

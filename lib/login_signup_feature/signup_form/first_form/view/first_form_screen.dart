@@ -14,7 +14,6 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
 import 'package:health_coach/custom_classes/validator_mixin.dart';
 
-
 class SignupFirstFormScreen extends StatelessWidget {
   const SignupFirstFormScreen({Key? key}) : super(key: key);
 
@@ -69,9 +68,6 @@ class SignupFirstFormScreen extends StatelessWidget {
             Navigator.pop(context);
             return;
           }
-          if(state is PopBack){
-            Navigator.pop(context);
-          }
         },
         child: _Scaffold(),
       ),
@@ -87,143 +83,145 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5.w),
-        child: ListView(
-          children: [
-            SizedBox(
-              height: 2.h,
-            ),
-            Text(
-              'We need to know about You!',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium!
-                  .copyWith(color: commonBlack),
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  context.read<FirstFormCubit>().selectAvatarGalleryDialog();
+    padding: EdgeInsets.symmetric(horizontal: 5.w),
+    child: ListView(
+      children: [
+        SizedBox(
+          height: 2.h,
+        ),
+        Text(
+          'We need to know about You!',
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium!
+              .copyWith(color: commonBlack),
+        ),
+        SizedBox(
+          height: 2.h,
+        ),
+        Center(
+          child: GestureDetector(
+            onTap: () {
+              context.read<FirstFormCubit>().selectAvatarGalleryDialog();
+            },
+            child: ImageSelector(),
+          ),
+        ),
+        Form(
+          autovalidateMode: AutovalidateMode.disabled,
+          key: _formKey,
+          onChanged: () {},
+          child: Column(
+            children: [
+              CustomTextField(
+                head: 'Name',
+                hintText: 'John',
+                icon: const Iconify(
+                  CustomIcons.nameIcon,
+                  color: commonGreen,
+                ),
+                delay: 100,
+                validator: (val) {
+                  context.read<FirstFormCubit>().checkName(val);
+                  return isNameValid(val);
                 },
-                child: Stack(
-                  children: [
-                    ImageSelector(),
-                    Positioned(
-                      left: 31.w,
-                      top: 15.h,
-                      child: const EditIconStack(),
-                    )
-                  ],
+              ),
+              CustomTextField(
+                head: 'Username',
+                hintText: 'john123',
+                icon: const Iconify(
+                  CustomIcons.nameIcon,
+                  color: commonGreen,
+                ),
+                delay: 200,
+                validator: (val) {
+                  context.read<FirstFormCubit>().checkUserName(val);
+                  return isUserNameValid(val);
+                },
+              ),
+              CustomTextField(
+                delay: 300,
+                validator: (val) {
+                  context.read<FirstFormCubit>().checkEmail(val);
+                  return isEmailValid(val);
+                },
+                head: 'Email',
+                hintText: 'john123@gmail.com',
+                icon: const Iconify(
+                  CustomIcons.emailIcon,
+                  color: commonGreen,
                 ),
               ),
-            ),
-            Form(
-              autovalidateMode: AutovalidateMode.disabled,
-              key: _formKey,
-              onChanged: () {},
-              child: Column(
-                children: [
-                  CustomTextField(
-                    head: 'Name',
-                    hintText: 'John',
-                    icon: const Iconify(
-                      CustomIcons.nameIcon,
-                      color: commonGreen,
-                    ),
-                    delay: 100,
-                    validator: (val) {
-                      context.read<FirstFormCubit>().checkName(val);
-                      return isNameValid(val);
-                    },
-                  ),
-                  CustomTextField(
-                    delay: 200,
-                    validator: (val) {
-                      context.read<FirstFormCubit>().checkEmail(val);
-                      return isEmailValid(val);
-                    },
-                    head: 'Email',
-                    hintText: 'john123@gmail.com',
-                    icon: const Iconify(
-                      CustomIcons.emailIcon,
-                      color: commonGreen,
-                    ),
-                  ),
-                  CustomTextField(
-                    delay: 300,
-                    validator: (val) {
-                      context.read<FirstFormCubit>().checkMobile(val);
-                      return isMobileValid(val);
-                    },
-                    head: 'Mobile',
-                    hintText: '9876543210',
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    icon: const Iconify(
-                      CustomIcons.mobileIcon,
-                      color: commonGreen,
-                    ),
-                    textInputType: TextInputType.number,
-                  ),
-                  CustomTextField(
-                    textInputAction: TextInputAction.done,
-                    delay: 400,
-                    obscureText: true,
-                    validator: (val) {
-                      context.read<FirstFormCubit>().checkPassword(val);
-                      return isPasswordValid(val);
-                    },
-                    head: 'Password',
-                    hintText: 'John@123',
-                    icon: const Iconify(
-                      CustomIcons.passwordIcon,
-                      color: commonGreen,
-                    ),
-                  ),
-                ],
+              CustomTextField(
+                delay: 400,
+                validator: (val) {
+                  context.read<FirstFormCubit>().checkMobile(val);
+                  return isMobileValid(val);
+                },
+                head: 'Mobile',
+                hintText: '9876543210',
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                icon: const Iconify(
+                  CustomIcons.mobileIcon,
+                  color: commonGreen,
+                ),
+                textInputType: TextInputType.number,
+              ),
+              CustomTextField(
+                textInputAction: TextInputAction.done,
+                delay: 500,
+                obscureText: true,
+                validator: (val) {
+                  context.read<FirstFormCubit>().checkPassword(val);
+                  return isPasswordValid(val);
+                },
+                head: 'Password',
+                hintText: 'John@123',
+                icon: const Iconify(
+                  CustomIcons.passwordIcon,
+                  color: commonGreen,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 2.h,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ZoomIn(
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back_rounded),
+                splashRadius: 0.01,
               ),
             ),
-            SizedBox(
-              height: 2.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ZoomIn(
-                  child: IconButton(
-                    onPressed: () {
-                      context.read<FirstFormCubit>().popBack();
-                    },
-                    icon: const Icon(Icons.arrow_back_rounded),
-                    splashRadius: 0.01,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(right: 1.w),
-                  child: ZoomIn(
-                      child: const _NextIconButton(
-                  )),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 3.h,
-            ),
+            Padding(
+              padding: EdgeInsets.only(right: 1.w),
+              child: ZoomIn(child:  _NextIconButton(formKey: _formKey,)),
+            )
           ],
         ),
+        SizedBox(
+          height: 3.h,
+        ),
+      ],
+    ),
       ),
-    ));
+    );
   }
 }
 
 class _NextIconButton extends StatelessWidget {
-
-  const _NextIconButton({
+  final GlobalKey<FormState> formKey;
+   _NextIconButton({
+    required this.formKey,
     Key? key,
   }) : super(key: key);
 
@@ -249,15 +247,21 @@ class _NextIconButton extends StatelessWidget {
           iconColor = commonGreen;
           scale = .9;
         }
-        return CustomNextButton(scale: scale, iconColor: iconColor, containerColor: containerColor, onPressed: (){
-          if (state is EnableNextButton) context.read<FirstFormCubit>().navigateToNext(context);
-        });
+        return CustomNextButton(
+            scale: scale,
+            iconColor: iconColor,
+            containerColor: containerColor,
+            onPressed: () {
+              if (state is EnableNextButton){
+                context.read<FirstFormCubit>().navigateToNext(context);
+              }else{
+                formKey.currentState!.validate();
+              }
+            });
       },
     );
   }
 }
-
-
 
 class ImageSelector extends StatelessWidget {
   ImageSelector({
@@ -277,32 +281,45 @@ class ImageSelector extends StatelessWidget {
           imagePath = state.imagePath;
           isGallery = state.isGallery;
         }
-        return isGallery!
-            ? Container(
-                height: 20.h,
-                width: 20.h,
-                decoration: BoxDecoration(
-                  border: Border.all(color: commonGreen, width: 3),
-                  shape: BoxShape.circle,
-                ),
-                child: ClipOval(
-                  child: Image.file(
-                    File(imagePath),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+        return Hero(
+          tag: 'edit',
+          child: Stack(
+            children: [
+              isGallery!
+                  ? Container(
+                      height: 20.h,
+                      width: 20.h,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: commonGreen, width: 3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipOval(
+                        child: Image.file(
+                          File(imagePath),
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.high,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      height: 20.h,
+                      width: 20.h,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: commonGreen, width: 3),
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: AssetImage(imagePath),
+                              filterQuality: FilterQuality.high)),
+                    ),
+              Positioned(
+                left: 31.w,
+                top: 15.h,
+                child: const EditIconStack(),
               )
-            : Container(
-                height: 20.h,
-                width: 20.h,
-                decoration: BoxDecoration(
-                    border: Border.all(color: commonGreen, width: 3),
-                    color: Colors.transparent,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        image: AssetImage(imagePath),
-                        filterQuality: FilterQuality.high)),
-              );
+            ],
+          ),
+        );
       },
     );
   }

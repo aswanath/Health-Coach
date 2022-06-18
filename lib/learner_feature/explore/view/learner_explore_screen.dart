@@ -76,20 +76,16 @@ class _Scaffold extends StatelessWidget {
               padding: EdgeInsets.zero,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
-                return FadeInDown(
-                  delay: Duration(milliseconds: index * 100),
-                  duration: const Duration(milliseconds: 500),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                              child: const BlogReadDetails(),
-                              type: PageTransitionType.fade));
-                    },
-                    child: _BlogCustomItem(
-                      description: 'Hello ' * ((index + 1) * 4),
-                    ),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: const BlogReadDetails(),
+                            type: PageTransitionType.fade));
+                  },
+                  child: BlogCustomItem(
+                    description: 'Hello ' * ((index + 1) * 4),
                   ),
                 );
               },
@@ -125,27 +121,13 @@ class _Scaffold extends StatelessWidget {
           SizedBox(
             height: 2.h,
           ),
-          SizedBox(
-            height: 32.h,
-            child: ListView.builder(
-                padding: EdgeInsets.only(left: 4.w, right: 1.w),
-                itemCount: 10,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(right: 3.w),
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  child: const CoachReadDetails(),
-                                  type: PageTransitionType.fade));
-                        },
-                        child: const _CoachItem()),
-                  );
-                }),
-          ),
+          CoachHorizontalScrollView(onTap: (){
+            Navigator.push(
+                context,
+                PageTransition(
+                    child: const CoachReadDetails(),
+                    type: PageTransitionType.fade));
+          },),
           SizedBox(
             height: 2.h,
           ),
@@ -155,8 +137,35 @@ class _Scaffold extends StatelessWidget {
   }
 }
 
-class _CoachItem extends StatelessWidget {
-  const _CoachItem({
+class CoachHorizontalScrollView extends StatelessWidget {
+  final VoidCallback onTap;
+  const CoachHorizontalScrollView({
+    required this.onTap,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 32.h,
+      child: ListView.builder(
+          padding: EdgeInsets.only(left: 4.w, right: 1.w),
+          itemCount: 10,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.only(right: 3.w),
+              child: GestureDetector(
+                  onTap: onTap,
+                  child: const CoachItem()),
+            );
+          }),
+    );
+  }
+}
+
+class CoachItem extends StatelessWidget {
+  const CoachItem({
     Key? key,
   }) : super(key: key);
 
@@ -267,11 +276,13 @@ class _StackElementCoach extends StatelessWidget {
   }
 }
 
-class _BlogCustomItem extends StatelessWidget {
+class BlogCustomItem extends StatelessWidget {
   final String description;
+  final int? maxLines;
 
-  const _BlogCustomItem({
+  const BlogCustomItem({
     required this.description,
+    this.maxLines,
     Key? key,
   }) : super(key: key);
 
@@ -279,6 +290,7 @@ class _BlogCustomItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       child: Material(
+        color: commonWhite,
         elevation: 10,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -301,6 +313,7 @@ class _BlogCustomItem extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
+                  color: commonWhite
                 ),
                 width: 43.w,
                 child: Container(
@@ -332,6 +345,8 @@ class _BlogCustomItem extends StatelessWidget {
                         style: Theme.of(context).textTheme.labelMedium,
                         minFontSize: 10,
                         maxFontSize: 12,
+                        maxLines: maxLines,
+                        overflow: TextOverflow.clip,
                       ),
                     ],
                   ),

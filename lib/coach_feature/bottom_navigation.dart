@@ -1,25 +1,128 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/bloc_navigation/navigation_bloc.dart';
+import 'package:health_coach/coach_feature/create/view/coach_create_screen.dart';
+import 'package:health_coach/coach_feature/home/view/coach_home_screen.dart';
+import 'package:health_coach/coach_feature/me/view/coach_me_screen.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/icons.dart';
-import 'package:health_coach/learner_feature/explore/view/learner_explore_screen.dart';
-import 'package:health_coach/learner_feature/home/view/learner_home_screen.dart';
-import 'package:health_coach/learner_feature/me/view/learner_me_screen.dart';
 import 'package:hidable/hidable.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
-class BottomNavigationLearnerScreen extends StatelessWidget {
-  const BottomNavigationLearnerScreen({Key? key}) : super(key: key);
+class BottomNavigationCoachScreen extends StatelessWidget {
+  const BottomNavigationCoachScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => NavigationBloc(),
-      child: _Scaffold(
-        homeScrollController: ScrollController(),
-        exploreScrollController: ScrollController(),
+      child: BlocListener<NavigationBloc, NavigationState>(
+        listener: (context, state) {
+          if (state is BlogOrCoachPopup) {
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return BlocProvider.value(
+                    value: context.read<NavigationBloc>(),
+                    child: _SelectionDialog(),
+                  );
+                });
+          }
+        },
+        child: _Scaffold(
+          homeScrollController: ScrollController(),
+          createScrollController: ScrollController(),
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectionDialog extends StatelessWidget {
+  const _SelectionDialog({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+      child: SizedBox(
+        height: 18.h,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 1.h,
+            ),
+            Text(
+              "Select any",
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(fontSize: 17.sp),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _SelectItems(
+                  text: "Course",
+                  icon: CustomIcons.courseIcon,
+                  onTap: () {
+                    context
+                        .read<NavigationBloc>()
+                        .add(CourseCreate(isCourse: true));
+                  },
+                ),
+                _SelectItems(
+                    text: "Blog",
+                    icon: CustomIcons.blogIcon,
+                    onTap: () {
+                      context
+                          .read<NavigationBloc>()
+                          .add(CourseCreate(isCourse: false));
+                    }),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectItems extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+  final String icon;
+
+  const _SelectItems(
+      {Key? key, required this.text, required this.icon, required this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 28.w,
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+        decoration: BoxDecoration(
+            border: Border.all(color: commonGreen),
+            borderRadius: BorderRadius.circular(11)),
+        child: Column(
+          children: [
+            Text(
+              text,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            Iconify(icon),
+          ],
+        ),
       ),
     );
   }
@@ -27,22 +130,20 @@ class BottomNavigationLearnerScreen extends StatelessWidget {
 
 class _Scaffold extends StatelessWidget {
   final ScrollController homeScrollController;
-  final ScrollController exploreScrollController;
+  final ScrollController createScrollController;
   List<Widget> screens = [];
 
   _Scaffold({
     required this.homeScrollController,
-    required this.exploreScrollController,
+    required this.createScrollController,
     Key? key,
   }) : super(key: key) {
     screens = [
-      LearnerHomeScreen(
+      CoachHomeScreen(
         scrollController: homeScrollController,
       ),
-      LearnerExploreScreen(
-        scrollController: exploreScrollController,
-      ),
-      LearnerMeScreen(),
+      CoachCreateScreen(),
+      CoachMeScreen()
     ];
   }
 
@@ -54,11 +155,16 @@ class _Scaffold extends StatelessWidget {
         alignment: Alignment.bottomCenter,
         children: [
           BlocBuilder<NavigationBloc, NavigationState>(
-              builder: (context, state) {
-            int index = 0;
-            if (state is NavigationBarChanged) {
-              index = state.currentIndex;
+              buildWhen: (previous, current) {
+            if (current is NavigationBarChanged) {
+              return true;
+            } else {
+              return false;
             }
+          }, builder: (context, state) {
+            state as NavigationBarChanged;
+            int index = state.currentIndex;
+
             return screens[index];
           }),
           BlocBuilder<NavigationBloc, NavigationState>(
@@ -68,7 +174,8 @@ class _Scaffold extends StatelessWidget {
                 if (state.currentIndex == 0) {
                   _scrollController = homeScrollController;
                 } else if (state.currentIndex == 1) {
-                  _scrollController = exploreScrollController;
+                  _scrollController = createScrollController;
+                  Navigator.pop(context);
                 }
               }
               return Hidable(
@@ -94,9 +201,9 @@ class _CustomBottomBar extends StatelessWidget {
   String _home = CustomIcons.homeSecondaryIcon;
   Color _homeColor = commonGreen;
 
-  double _exploreScale = 1;
-  String _explore = CustomIcons.explorePrimaryIcon;
-  Color _exploreColor = commonBlack;
+  double _createScale = 1;
+  String _create = CustomIcons.createPrimaryIcon;
+  Color _createColor = commonBlack;
 
   double _meScale = .95;
   String _me = CustomIcons.mePrimaryIcon;
@@ -109,6 +216,13 @@ class _CustomBottomBar extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: BlocBuilder<NavigationBloc, NavigationState>(
+          buildWhen: (previous, current) {
+            if (current is NavigationBarChanged) {
+              return true;
+            } else {
+              return false;
+            }
+          },
           builder: (context, state) {
             if (state is NavigationBarChanged) {
               int index = state.currentIndex;
@@ -116,16 +230,16 @@ class _CustomBottomBar extends StatelessWidget {
                 _homeScale = 1.2;
                 _home = CustomIcons.homeSecondaryIcon;
                 _homeColor = commonGreen;
-                _exploreScale = 1;
+                _createScale = 1;
                 _meScale = .95;
-                _explore = CustomIcons.explorePrimaryIcon;
+                _create = CustomIcons.createPrimaryIcon;
                 _me = CustomIcons.mePrimaryIcon;
                 _meColor = commonBlack;
-                _exploreColor = commonBlack;
+                _createColor = commonBlack;
               } else if (index == 1) {
-                _exploreScale = 1.2;
-                _exploreColor = commonGreen;
-                _explore = CustomIcons.exploreSecondaryIcon;
+                _createScale = 1.2;
+                _createColor = commonGreen;
+                _create = CustomIcons.createSecondaryIcon;
                 _homeScale = 1;
                 _meScale = .95;
                 _home = CustomIcons.homePrimaryIcon;
@@ -136,11 +250,11 @@ class _CustomBottomBar extends StatelessWidget {
                 _meScale = 1.15;
                 _meColor = commonGreen;
                 _me = CustomIcons.meSecondaryIcon;
-                _exploreScale = 1;
+                _createScale = 1;
                 _homeScale = 1;
-                _explore = CustomIcons.explorePrimaryIcon;
+                _create = CustomIcons.createPrimaryIcon;
                 _home = CustomIcons.homePrimaryIcon;
-                _exploreColor = commonBlack;
+                _createColor = commonBlack;
                 _homeColor = commonBlack;
               }
             }
@@ -149,7 +263,7 @@ class _CustomBottomBar extends StatelessWidget {
               onTap: (index) {
                 context
                     .read<NavigationBloc>()
-                    .add(ChangeIndexEvent(index: index, isCoach: false));
+                    .add(ChangeIndexEvent(index: index, isCoach: true));
               },
               showSelectedLabels: false,
               items: [
@@ -168,10 +282,10 @@ class _CustomBottomBar extends StatelessWidget {
                     label: '',
                     icon: AnimatedScale(
                       duration: _scaleDuration,
-                      scale: _exploreScale,
+                      scale: _createScale,
                       child: Iconify(
-                        _explore,
-                        color: _exploreColor,
+                        _create,
+                        color: _createColor,
                         size: 23.sp,
                       ),
                     )),

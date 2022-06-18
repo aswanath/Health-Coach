@@ -21,9 +21,6 @@ class LearnerFormScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<FirstFormCubit, FirstFormState>(
       listener: (context, state) {
-        if (state is PopBackLearner) {
-          Navigator.pop(context);
-        }
         if (state is RegisterSuccessPopup) {
           showDialog(
             useRootNavigator: false,
@@ -122,9 +119,9 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                 ),
                 CustomTextField(
                   textInputAction: TextInputAction.done,
-                  height: 19.94.h,
                   validator: (val) {
-                    return null;
+                    context.read<FirstFormCubit>().checkHealth(val);
+                    return isHealthValid(val);
                   },
                   delay: 400,
                   head: 'Health Condition',
@@ -140,7 +137,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                     ZoomIn(
                       child: CustomElevatedButton(
                           voidCallback: () {
-                            context.read<FirstFormCubit>().popBackLearner();
+                            Navigator.pop(context);
                           },
                           text: 'Back',
                           backgroundColor: Colors.transparent,
