@@ -7,8 +7,10 @@ import 'package:health_coach/custom_classes/validator_mixin.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
 import 'package:health_coach/custom_widgets/form_field.dart';
 import 'package:health_coach/icons.dart';
+import 'package:health_coach/login_signup_feature/bloc/login_signup_bloc.dart';
 import 'package:health_coach/login_signup_feature/signup_form/cubit/first_form_cubit.dart';
 import 'package:health_coach/login_signup_feature/signup_form/first_form/view/first_form_screen.dart';
+import 'package:health_coach/repository/repository.dart';
 import 'package:hidable/hidable.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
@@ -18,8 +20,11 @@ class EditProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => FirstFormCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<FirstFormCubit>(create: (context)=> FirstFormCubit()),
+        BlocProvider<LoginSignupBloc>(create: (context)=> LoginSignupBloc(repository: context.read<Repository>())),
+      ],
       child: BlocListener<FirstFormCubit, FirstFormState>(
         listener: (context, state) {
           if (state is ShowAvatarGalleryPopup) {

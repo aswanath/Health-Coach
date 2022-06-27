@@ -10,18 +10,21 @@ mixin InputValidatorMixin {
     }
   }
 
-  String? isUserNameValid(String? value){
-    if(value!.isEmpty){
+  String? isUserNameValid(String? value) {
+    if (value!.isEmpty) {
       return "username can't be empty";
-    }else{
+    } else {
       return null;
     }
   }
 
-  String? isHealthValid(String? value){
-    if(value!.isEmpty){
+  String? isHealthValid(String? value) {
+    final result = value!.trim();
+    if (result.isEmpty) {
       return "Description can't be empty";
-    }else{
+    } else if(result.length<10){
+      return "should be above 10 characters";
+    }else {
       return null;
     }
   }
@@ -66,8 +69,8 @@ mixin InputValidatorMixin {
       return "Age can't be empty";
     } else {
       int age = int.parse(value);
-      if (age > 99 || age < 5) {
-        return "Please enter a valid age between 5 - 99";
+      if (age > 200 || age < 2) {
+        return "Please enter a valid age";
       } else {
         return null;
       }
@@ -75,28 +78,28 @@ mixin InputValidatorMixin {
   }
 
   String? isWeightValid(String? value) {
-    if (value!.isNotEmpty) {
+    if (value!.isEmpty) {
+      return "Weight can't be empty";
+    } else {
       int weight = int.parse(value);
-      if (weight > 200 || weight < 5) {
-        return "Please enter a valid weight between 5 - 200";
+      if (weight > 500 || weight < 5) {
+        return "Please enter a valid weight";
       } else {
         return null;
       }
-    } else {
-      return null;
     }
   }
 
   String? isHeightValid(String? value) {
-    if (value!.isNotEmpty) {
-      int weight = int.parse(value);
-      if (weight > 300 || weight < 50) {
-        return "Please enter a valid height between 50 - 300";
+    if (value!.isEmpty) {
+      return "Height can't be empty";
+    } else {
+      int height = int.parse(value);
+      if (height > 500 || height < 5) {
+        return "Please enter a valid height";
       } else {
         return null;
       }
-    } else {
-      return null;
     }
   }
 

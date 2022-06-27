@@ -10,6 +10,7 @@ import 'package:health_coach/internet_connection/internet_bloc.dart';
 import 'package:health_coach/login_signup_feature/bloc/login_signup_bloc.dart';
 import 'package:health_coach/login_signup_feature/login/view/login_screen.dart';
 import 'package:health_coach/login_signup_feature/signup_selection/view/coach_learner_selection_screen.dart';
+import 'package:health_coach/repository/repository.dart';
 import 'package:health_coach/splash/view/splash.dart';
 import 'package:health_coach/theme/theme.dart';
 import 'package:page_transition/page_transition.dart';
@@ -21,7 +22,7 @@ class SelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginSignupBloc(),
+      create: (context) => LoginSignupBloc(repository: context.read<Repository>()),
       child: BlocListener<LoginSignupBloc, LoginSignupState>(
         listener: (context, state) {
           if (state is NavigateToLoginScreen) {

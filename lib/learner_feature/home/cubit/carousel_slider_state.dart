@@ -10,5 +10,6 @@ class CarouselChanged extends CarouselSliderChangedState{
 
 class GreetingChanged extends CarouselSliderChangedState{
   final String greeting;
-  GreetingChanged({required this.greeting});
+  final String name;
+  GreetingChanged({required this.greeting,required this.name});
 }

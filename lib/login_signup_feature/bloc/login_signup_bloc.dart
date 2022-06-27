@@ -1,10 +1,10 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
-import 'package:health_coach/constants/api_constants.dart';
-import 'package:health_coach/internet_connection/internet_bloc.dart';
-import 'package:health_coach/login_signup_feature/login/model/login_post_model.dart';
+import 'package:flutter/material.dart';
+import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/login_signup_feature/signup_form/coach_form/model/signup_post_model.dart';
+import 'package:health_coach/login_signup_feature/signup_form/learner_form/model/signup_post_model.dart';
+import 'package:health_coach/repository/repository.dart';
 import 'package:meta/meta.dart';
 
 part 'login_signup_event.dart';
@@ -18,11 +18,30 @@ final List<UserType> coachLoginList = [UserType.Learner, UserType.Admin];
 final List<UserType> adminLoginList = [UserType.Learner, UserType.Coach];
 
 class LoginSignupBloc extends Bloc<LoginSignupEvent, LoginSignupState> {
-  final Dio _dio = Dio();
+  final Repository repository;
 
-  LoginSignupBloc()
+  //common fields
+  String? name;
+  String? userName;
+  String? email;
+  int? phone;
+  String? password;
+  String? imagePath = avatarList[3];
+  bool? isGallery = false;
+
+  //learner fields
+  int? age;
+  int? height;
+  int? weight;
+  String? healthCondition;
+
+  //coach fields
+  List<String>? certifications;
+  List<String>? streams;
+  String? about;
+
+  LoginSignupBloc({required this.repository})
       : super(TypeOfLogin(userType: UserType.Learner, list: learnerLoginList)) {
-
     on<NavigateToLogin>((event, emit) {
       emit(NavigateToLoginScreen());
     });
@@ -45,26 +64,97 @@ class LoginSignupBloc extends Bloc<LoginSignupEvent, LoginSignupState> {
 
     on<LoginUserCheck>((event, emit) async {
       emit(LoginChecking());
-      final userCredentials =
-          LoginPost(username: event.username, password: event.password);
-
-      if (event.userType == UserType.Learner) {
-        try {
-          final check = await _dio.post(PostRequests.learnerLogin,
-              data: loginPostToJson(userCredentials));
-          if (check.statusCode == 200) {
-            emit(LoginSuccess(userType: UserType.Learner));
-          }
-        } catch (e) {
-          if (e is DioError) {
-            if(e.type == DioErrorType.response){
-                emit(LoginFailed(errorMessage: e.response!.data["message"]));
-            }else{
-              emit(LoginFailed(errorMessage: 'Something went wrong'));
-            }
-          }
-        }
+      try {
+        await repository.login(
+            username: event.username,
+            password: event.password,
+            userType: event.userType);
+        emit(LoginSuccess(userType: event.userType));
+      } catch (e) {
+        emit(LoginFailed(errorMessage: e.toString()));
       }
+    });
+
+    on<FirstFormEvent>((event, emit) {
+      name = event.name ?? name;
+      userName = event.userName ?? userName;
+      email = event.email ?? email;
+      phone = event.phone ?? phone;
+      password = event.password ?? password;
+      imagePath = event.imagePath ?? imagePath;
+      isGallery = event.isGallery ?? isGallery;
+    });
+
+    on<LearnerFormEvent>((event, emit) {
+      age = event.age ?? age;
+      height = event.height ?? height;
+      weight = event.weight ?? weight;
+      healthCondition = event.healthCondition ?? healthCondition;
+    });
+
+    on<CoachFormEvent>((event, emit) {
+      certifications = event.certifications ?? certifications;
+      streams = event.streams ?? streams;
+      about = event.about ?? about;
+    });
+
+    on<LearnerRegisterCheck>((event, emit) async {
+      emit(RegisterChecking());
+      final userCredentials = LearnerRegisterPost(
+          name: name!,
+          username: userName!,
+          email: email!,
+          phone: phone!,
+          password: password!,
+          age: age!,
+          height: height!,
+          weight: weight!,
+          healthcondition: healthCondition!);
+      try {
+        await emit.forEach(
+            repository.learnerRegister(
+                credentials: userCredentials,
+                isGallery: isGallery!,
+                imagePath: imagePath!),
+            onData: (event) {
+              if (event == 'registered') {
+               return RegisterSuccess();
+              } else if (event == 'logging') {
+                return LoggingIn();
+              } else{
+                return LoginSuccess(userType: UserType.Learner);
+              }
+            });
+        // repository
+        //     .learnerRegister(
+        //         credentials: userCredentials,
+        //         isGallery: isGallery!,
+        //         imagePath: imagePath!)
+        //     .listen((event) {
+        //   if (event == 'registered') {
+        //     emit(RegisterSuccess());
+        //   } else if (event == 'logging') {
+        //     emit(LoggingIn());
+        //   } else if (event == 'logged') {
+        //     emit(LoginSuccess(userType: UserType.Learner));
+        //   }
+        // });
+      } catch (e) {
+        emit(RegisterFailed(errorMessage: e.toString()));
+      }
+    });
+
+    on<CoachRegisterCheck>((event, emit) {
+      emit(RegisterChecking());
+      final userCredentials = CoachRegisterPost(
+          name: name!,
+          username: userName!,
+          email: email!,
+          phone: phone!,
+          password: password!,
+          streams: streams!,
+          certifications: certifications!,
+          about: about!);
     });
   }
 }

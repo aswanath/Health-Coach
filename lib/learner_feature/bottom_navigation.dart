@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/bloc_navigation/navigation_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/icons.dart';
+import 'package:health_coach/learner_feature/bloc/learner_bloc.dart';
 import 'package:health_coach/learner_feature/explore/view/learner_explore_screen.dart';
 import 'package:health_coach/learner_feature/home/view/learner_home_screen.dart';
 import 'package:health_coach/learner_feature/me/view/learner_me_screen.dart';
+import 'package:health_coach/login_signup_feature/bloc/login_signup_bloc.dart';
 import 'package:hidable/hidable.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
@@ -15,36 +17,27 @@ class BottomNavigationLearnerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NavigationBloc(),
-      child: _Scaffold(
-        homeScrollController: ScrollController(),
-        exploreScrollController: ScrollController(),
-      ),
-    );
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider<NavigationBloc>(create: (context) => NavigationBloc()),
+        ],
+        child: _Scaffold(
+          homeScrollController: ScrollController(),
+          exploreScrollController: ScrollController(),
+        ));
   }
 }
 
 class _Scaffold extends StatelessWidget {
   final ScrollController homeScrollController;
   final ScrollController exploreScrollController;
-  List<Widget> screens = [];
+  final PageController pageController = PageController();
 
   _Scaffold({
     required this.homeScrollController,
     required this.exploreScrollController,
     Key? key,
-  }) : super(key: key) {
-    screens = [
-      LearnerHomeScreen(
-        scrollController: homeScrollController,
-      ),
-      LearnerExploreScreen(
-        scrollController: exploreScrollController,
-      ),
-      LearnerMeScreen(),
-    ];
-  }
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +46,19 @@ class _Scaffold extends StatelessWidget {
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          BlocBuilder<NavigationBloc, NavigationState>(
-              builder: (context, state) {
-            int index = 0;
-            if (state is NavigationBarChanged) {
-              index = state.currentIndex;
-            }
-            return screens[index];
-          }),
+          PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: pageController,
+            children: [
+              LearnerHomeScreen(
+                scrollController: homeScrollController,
+              ),
+              LearnerExploreScreen(
+                scrollController: exploreScrollController,
+              ),
+              const LearnerMeScreen()
+            ],
+          ),
           BlocBuilder<NavigationBloc, NavigationState>(
             builder: (context, state) {
               ScrollController _scrollController = homeScrollController;
@@ -72,7 +70,9 @@ class _Scaffold extends StatelessWidget {
                 }
               }
               return Hidable(
-                child: _CustomBottomBar(),
+                child: _CustomBottomBar(
+                  pageController: pageController,
+                ),
                 controller: _scrollController,
                 size: 11.3.h,
               );
@@ -85,7 +85,10 @@ class _Scaffold extends StatelessWidget {
 }
 
 class _CustomBottomBar extends StatelessWidget {
+  final PageController pageController;
+
   _CustomBottomBar({
+    required this.pageController,
     Key? key,
   }) : super(key: key);
   static const Duration _scaleDuration = Duration(milliseconds: 300);
@@ -147,6 +150,9 @@ class _CustomBottomBar extends StatelessWidget {
             return BottomNavigationBar(
               backgroundColor: Colors.grey.shade200,
               onTap: (index) {
+                pageController.animateToPage(index,
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.decelerate);
                 context
                     .read<NavigationBloc>()
                     .add(ChangeIndexEvent(index: index, isCoach: false));

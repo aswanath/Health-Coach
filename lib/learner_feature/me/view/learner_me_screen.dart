@@ -1,11 +1,17 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/custom_widgets/list_tile.dart';
 import 'package:health_coach/icons.dart';
+import 'package:health_coach/learner_feature/bloc/learner_bloc.dart';
 import 'package:health_coach/learner_feature/me/edit_profile/view/profile_edit.dart';
 import 'package:health_coach/learner_feature/me/my_courses/view/me_my_courses.dart';
+import 'package:health_coach/login_signup_feature/selection/view/login_signup_selection_screen.dart';
 import 'package:health_coach/login_signup_feature/signup_form/first_form/view/first_form_screen.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:health_coach/repository/repository.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
@@ -14,7 +20,19 @@ class LearnerMeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _Scaffold();
+    return BlocListener<LearnerBloc, LearnerState>(
+        listener: (context, state) {
+          if (state is LogOutState) {
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  child: const SelectionScreen(),
+                  type: PageTransitionType.topToBottom,
+                  duration: const Duration(milliseconds: 300)),
+            );
+          }
+        },
+        child: const _Scaffold());
   }
 }
 
@@ -50,10 +68,13 @@ class _Scaffold extends StatelessWidget {
           SizedBox(
             height: 1.h,
           ),
-          Align(
-              child: Text(
-            "Aswanath C K",
-            style: Theme.of(context).textTheme.labelMedium,
+          Align(child: BlocBuilder<LearnerBloc, LearnerState>(
+            builder: (context, state) {
+              return Text(
+                context.read<Repository>().name,
+                style: Theme.of(context).textTheme.labelMedium,
+              );
+            },
           )),
           SizedBox(
             height: 1.h,
@@ -86,7 +107,7 @@ class _Scaffold extends StatelessWidget {
             onTap: () {
               showDialog(
                   context: context,
-                  builder: (context) {
+                  builder: (_) {
                     return AlertDialog(
                       title: Text(
                         "Logging Out",
@@ -115,7 +136,10 @@ class _Scaffold extends StatelessWidget {
                                   .copyWith(color: commonGreen),
                             )),
                         TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              context.read<LearnerBloc>().add(LogOutEvent());
+                              // Navigator.pushReplacement(context, PageTransition(child: Selection, type: type))
+                            },
                             child: Text(
                               "Yes",
                               style: Theme.of(context).textTheme.labelMedium,
@@ -154,21 +178,33 @@ class _ImageEdit extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          height: 20.h,
-          width: 20.h,
           decoration: BoxDecoration(
-              border: Border.all(color: commonGreen, width: 3),
-              color: Colors.transparent,
-              shape: BoxShape.circle,
-              image: const DecorationImage(
-                  image: AssetImage('assets/images/avatars/four.png'),
-                  filterQuality: FilterQuality.high)),
+            border: Border.all(color: commonGreen, width: 3),
+            color: Colors.transparent,
+            shape: BoxShape.circle,
+          ),
+          child: BlocBuilder<LearnerBloc, LearnerState>(
+            builder: (context, state) {
+                return CachedNetworkImage(
+                  height: 20.h,
+                  width: 19.5.h,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                  imageUrl: context.read<Repository>().image,
+                  imageBuilder: (context, imageProvider) {
+                    return CircleAvatar(
+                      foregroundImage: imageProvider,
+                    );
+                  },
+                );
+            },
+          ),
         ),
         Positioned(
           left: 31.w,
           top: 15.h,
           child: const EditIconStack(),
-        )
+        ),
       ],
     );
   }

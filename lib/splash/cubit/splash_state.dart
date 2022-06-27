@@ -5,4 +5,10 @@ abstract class SplashState {}
 
 class SplashInitial extends SplashState {}
 
-class SplashEnd extends SplashState{}
+class SplashToSelection extends SplashState{}
+
+class SplashToLearner extends SplashState{}
+
+class SplashToCoach extends SplashState{}
+
+class SplashToAdmin extends SplashState{}

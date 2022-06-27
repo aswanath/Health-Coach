@@ -33,3 +33,7 @@ class DisableNextButtonCoach extends FirstFormState{}
 class RegisterSuccessPopup extends FirstFormState{}
 
 class RegisterSuccessPopUpCoach extends FirstFormState{}
+
+class NavigateToCoachFormScreen extends FirstFormState{}
+
+class NavigateToLearnerFormScreen extends FirstFormState{}

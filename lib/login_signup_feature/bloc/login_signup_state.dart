@@ -24,3 +24,15 @@ class LoginFailed extends LoginSignupState{
   final String errorMessage;
   LoginFailed({required this.errorMessage});
 }
+
+class RegisterChecking extends LoginSignupState{}
+
+class RegisterSuccess extends LoginSignupState{}
+
+class RegisterFailed extends LoginSignupState{
+  final String errorMessage;
+  RegisterFailed({required this.errorMessage});
+}
+
+class LoggingIn extends LoginSignupState{}
+

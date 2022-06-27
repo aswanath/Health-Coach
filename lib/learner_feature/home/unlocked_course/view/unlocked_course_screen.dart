@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/learner_feature/home/model/unlocked_course_model.dart';
 import 'package:hidable/hidable.dart';
 import 'package:sizer/sizer.dart';
 
 class UnlockedCourse extends StatelessWidget {
   final int heroTag;
+  final Workout workout;
 
-  const UnlockedCourse({Key? key, required this.heroTag}) : super(key: key);
+  const UnlockedCourse({Key? key, required this.heroTag,required this.workout}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _Scaffold();
+    return _Scaffold(workout: workout,);
   }
 }
 
 class _Scaffold extends StatelessWidget {
+  final Workout workout;
   _Scaffold({
     Key? key,
+    required this.workout
   }) : super(key: key);
   final ScrollController _scrollController = ScrollController();
 
@@ -32,7 +36,7 @@ class _Scaffold extends StatelessWidget {
                 elevation: 0,
                 iconTheme: IconThemeData(color: commonGreen, size: 24.sp),
                 titleSpacing: 0,
-                title: const _AppBarTitle(),
+                title:  _AppBarTitle(trainerName: workout.trainer,courseName: workout.workout,),
               ),
               controller: _scrollController),
         ),
@@ -43,7 +47,7 @@ class _Scaffold extends StatelessWidget {
             SizedBox(
               height: 2.h,
             ),
-            const _CarouselItem(),
+             _CarouselItem(imageLink: workout.image,program: workout.program,),
             SizedBox(
               height: 3.h,
             ),
@@ -55,9 +59,7 @@ class _Scaffold extends StatelessWidget {
               height: 1.5.h,
             ),
             Text(
-              '''In purus at morbi magna in in maecenas. Nunc nulla magna elit, varius phasellus 
-Nunc nulla magna elit, varius phasellus blandit convallis. In purus at morbi
-magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis.''',
+              workout.description,
               style: Theme.of(context)
                   .textTheme
                   .labelSmall!
@@ -74,10 +76,7 @@ magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis.
               height: 1.5.h,
             ),
             Text(
-              '''In purus at morbi magna in in maecenas. Nunc nulla magna elit, varius phasellus 
-Nunc nulla magna elit, varius phasellus blandit convallis. In purus at morbi
-magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis.varius phasellus blandit convallis. In purus at morbi
-magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis''',
+              workout.diet1,
               style: Theme.of(context)
                   .textTheme
                   .labelSmall!
@@ -91,8 +90,12 @@ magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis'
 }
 
 class _CarouselItem extends StatelessWidget {
+  final String imageLink;
+  final String program;
   const _CarouselItem({
     Key? key,
+    required this.imageLink,
+    required this.program
   }) : super(key: key);
 
   @override
@@ -103,8 +106,8 @@ class _CarouselItem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: Image.asset(
-              'assets/images/carousel_demo.jpg',
+            child: Image.network(
+              imageLink,
               fit: BoxFit.cover,
               height: 22.h,
               width: 100.w,
@@ -135,7 +138,7 @@ class _CarouselItem extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 6.w, vertical: .25.h),
                   child: Text(
-                    'Cardio',
+                    program,
                     style: Theme.of(context)
                         .textTheme
                         .labelMedium!
@@ -154,22 +157,26 @@ class _CarouselItem extends StatelessWidget {
 }
 
 class _AppBarTitle extends StatelessWidget {
+  final String courseName;
+  final String trainerName;
   const _AppBarTitle({
     Key? key,
+    required this.courseName,
+    required this.trainerName
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Cardio Hard',
+        Text(courseName,
             style: Theme.of(context)
                 .textTheme
                 .labelMedium!
                 .copyWith(fontSize: 17.sp)),
         Text(
-          'Rajesh Kumar',
+          trainerName,
           style: Theme.of(context).textTheme.labelSmall!.copyWith(height: .8),
         )
       ],

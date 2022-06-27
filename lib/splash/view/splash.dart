@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_coach/coach_feature/bottom_navigation.dart';
+import 'package:health_coach/learner_feature/bottom_navigation.dart';
 import 'package:health_coach/login_signup_feature/selection/view/login_signup_selection_screen.dart';
+import 'package:health_coach/repository/repository.dart';
 import 'package:health_coach/splash/cubit/splash_cubit.dart';
 import 'package:health_coach/theme/theme.dart';
 import 'package:page_transition/page_transition.dart';
@@ -15,13 +18,38 @@ class SplashScreen extends StatelessWidget {
       create: (context) => SplashCubit(),
       child: BlocListener<SplashCubit, SplashState>(
         listener: (context, state) {
-          if (state is SplashEnd) {
+          if (state is SplashToSelection) {
             Navigator.pushReplacement(
                 context,
                 PageTransition(
                     child: const SelectionScreen(),
                     type: PageTransitionType.fade));
+            return;
           }
+          if(state is SplashToLearner) {
+            Navigator.pushReplacement(
+                context,
+                PageTransition(
+                    child: const BottomNavigationLearnerScreen(),
+                    type: PageTransitionType.fade));
+            return;
+          }
+          if(state is SplashToCoach) {
+            Navigator.pushReplacement(
+                context,
+                PageTransition(
+                    child: const BottomNavigationCoachScreen(),
+                    type: PageTransitionType.fade));
+            return;
+          }
+          // if(state is SplashToAdmin) {
+          //   Navigator.pushReplacement(
+          //       context,
+          //       PageTransition(
+          //           child: const BottomNavigation(),
+          //           type: PageTransitionType.fade));
+          //   return;
+          // }
         },
         child: const SafeArea(
           child: Scaffold(

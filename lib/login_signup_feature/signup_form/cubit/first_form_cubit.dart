@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/login_signup_feature/login/view/login_screen.dart';
-import 'package:health_coach/login_signup_feature/signup_form/coach_form/view/coach_form_screen.dart';
-import 'package:health_coach/login_signup_feature/signup_form/learner_form/view/learner_form_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:health_coach/custom_classes/validator_mixin.dart';
@@ -24,14 +22,25 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
   bool aboutCheck = false;
   bool userNameCheck = false;
 
+  late String name;
+  late String userName;
+  late String email;
+  late int phone;
+  late String password;
+  late int age;
+  late int height;
+  late int weight;
+  late String healthCondition;
+
   FirstFormCubit() : super(ImageInitialState(imagePath: avatarList[3]));
 
   void selectAvatarGalleryDialog() => emit(ShowAvatarGalleryPopup());
 
   void selectAvatar() => emit(ShowSelectAvatarPopup());
 
-  void updateAvatar(int index) =>
-      emit(ImageUpdateState(imagePath: avatarList[index], isGallery: false));
+  void updateAvatar(int index) {
+    emit(ImageUpdateState(imagePath: avatarList[index], isGallery: false));
+  }
 
   Future selectGallery() async {
     final ImagePicker _imagePicker = ImagePicker();
@@ -41,27 +50,12 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
     }
   }
 
-  void navigateToNext(BuildContext context) {
+  void navigateToNext() {
     final result = sharedPreferences.getString("Selected");
     if (result == "Coach") {
-      Navigator.push(
-          context,
-          PageTransition(
-              child: BlocProvider.value(
-                value: context.read<FirstFormCubit>(),
-                child: const CoachFormScreen(),
-              ),
-              type: PageTransitionType.fade));
+      emit(NavigateToCoachFormScreen());
     } else if (result == "Learner") {
-      emit(DisableNextButtonLearner());
-      Navigator.push(
-          context,
-          PageTransition(
-              child: BlocProvider.value(
-                value: context.read<FirstFormCubit>(),
-                child: const LearnerFormScreen(),
-              ),
-              type: PageTransitionType.fade));
+      emit(NavigateToLearnerFormScreen());
     }
   }
 
@@ -90,7 +84,10 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
   }
 
   void enableNextButtonLearner() {
-    if (ageCheck == true && weightCheck == true && heightCheck == true && healthCheck == true) {
+    if (ageCheck == true &&
+        weightCheck == true &&
+        heightCheck == true &&
+        healthCheck == true) {
       emit(EnableNextButtonLearner());
     } else {
       emit(DisableNextButtonLearner());
@@ -226,4 +223,40 @@ class FirstFormCubit extends Cubit<FirstFormState> with InputValidatorMixin {
     }
     enableNextButtonCoach();
   }
+
+  // void setName(String? value) {
+  //   name = value!;
+  // }
+  //
+  // void setUserName(String? value) {
+  //   userName = value!;
+  // }
+  //
+  // void setEmail(String? value) {
+  //   email = value!;
+  // }
+  //
+  // void setPhone(String? value) {
+  //   phone = int.parse(value!);
+  // }
+  //
+  // void setPassword(String? value) {
+  //   password = value!;
+  // }
+  //
+  // void setAge(String? value) {
+  //   age = int.parse(value!);
+  // }
+  //
+  // void setHeight(String? value) {
+  //   height = int.parse(value!);
+  // }
+  //
+  // void setWeight(String? value) {
+  //   weight = int.parse(value!);
+  // }
+  //
+  // void setHealthCondition(String? value) {
+  //   healthCondition = value!;
+  // }
 }

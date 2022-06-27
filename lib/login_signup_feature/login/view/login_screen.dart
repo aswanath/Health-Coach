@@ -1,4 +1,3 @@
-
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:health_coach/icons.dart';
 import 'package:health_coach/internet_connection/internet_bloc.dart';
 import 'package:health_coach/learner_feature/bottom_navigation.dart';
 import 'package:health_coach/login_signup_feature/bloc/login_signup_bloc.dart';
+import 'package:health_coach/repository/repository.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
 import 'package:health_coach/custom_classes/validator_mixin.dart';
@@ -22,7 +22,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginSignupBloc(),
+      create: (context) => LoginSignupBloc(repository: context.read<Repository>()),
       child: BlocListener<LoginSignupBloc, LoginSignupState>(
         listener: (context, state) {
           if (state is LoginFailed) {
@@ -37,12 +37,16 @@ class LoginScreen extends StatelessWidget {
             );
             return;
           }
-          if(state is LoginSuccess){
-            if(state.userType==UserType.Learner){
-              getx.Get.offAll(const BottomNavigationLearnerScreen(),transition: getx.Transition.fadeIn);
+          if (state is LoginSuccess) {
+            if (state.userType == UserType.Learner) {
+              getx.Get.offAll(
+                  BlocProvider.value(
+                    value: context.read<LoginSignupBloc>(),
+                    child: const BottomNavigationLearnerScreen(),
+                  ),
+                  transition: getx.Transition.fadeIn);
             }
           }
-
         },
         child: _Scaffold(),
       ),
@@ -55,7 +59,8 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
     Key? key,
   }) : super(key: key);
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
-  final TextEditingController _emailTextEditingController = TextEditingController();
+  final TextEditingController _emailTextEditingController =
+      TextEditingController();
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
   UserType loginType = UserType.Learner;
@@ -167,6 +172,7 @@ class _Scaffold extends StatelessWidget with InputValidatorMixin {
                             return CustomElevatedButton(
                               voidCallback: () {
                                 if (_globalKey.currentState!.validate()) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                   context
                                       .read<LoginSignupBloc>()
                                       .add(

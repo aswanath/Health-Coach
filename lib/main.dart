@@ -7,7 +7,10 @@ import 'app.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   sharedPreferences = await SharedPreferences.getInstance();
-  sharedPreferences.setBool('isFirst', true);
+  await sharedPreferences.setBool('isFirst', true);
+  await apiCacheManager.emptyCache();
+  // print(sharedPreferences.getString(tokenKey));
+  // sharedPreferences.clear();
   runApp(const MyApp());
 }
 

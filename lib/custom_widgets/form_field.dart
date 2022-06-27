@@ -14,6 +14,7 @@ class CustomTextField extends StatelessWidget {
   final Widget? icon;
   final String head;
   final String? Function(String?)? validator;
+  final String? Function(String?)? onSaved;
   final TextInputType? textInputType;
   final List<TextInputFormatter>? inputFormatters;
   final bool? obscureText;
@@ -40,6 +41,7 @@ class CustomTextField extends StatelessWidget {
     required this.head,
     required this.hintText,
     this.icon,
+    this.onSaved,
     Key? key,
   }) : super(key: key);
 
@@ -65,6 +67,7 @@ class CustomTextField extends StatelessWidget {
               height: .5.h,
             ),
             TextFormField(
+              onSaved: onSaved,
               controller: textEditingController,
               textCapitalization: TextCapitalization.words,
               maxLength: maxLength??165,

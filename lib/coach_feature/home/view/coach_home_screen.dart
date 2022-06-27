@@ -43,9 +43,7 @@ class _Scaffold extends StatelessWidget {
             SizedBox(
               height: 2.h,
             ),
-            GreetingText(
-              name: 'Coach',
-            ),
+            GreetingText(),
             HorizontalScrollView(isUnlocked: true, title: 'Your Courses'),
             Padding(
               padding: EdgeInsets.only(left: 6.w, top: 2.5.h, bottom: 1.h),
