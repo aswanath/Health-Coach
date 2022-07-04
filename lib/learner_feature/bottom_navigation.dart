@@ -3,12 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/bloc_navigation/navigation_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
 import 'package:health_coach/icons.dart';
-import 'package:health_coach/learner_feature/bloc/learner_bloc.dart';
 import 'package:health_coach/learner_feature/explore/view/learner_explore_screen.dart';
 import 'package:health_coach/learner_feature/home/view/learner_home_screen.dart';
 import 'package:health_coach/learner_feature/me/view/learner_me_screen.dart';
-import 'package:health_coach/login_signup_feature/bloc/login_signup_bloc.dart';
-import 'package:hidable/hidable.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:sizer/sizer.dart';
 
@@ -21,21 +18,14 @@ class BottomNavigationLearnerScreen extends StatelessWidget {
         providers: [
           BlocProvider<NavigationBloc>(create: (context) => NavigationBloc()),
         ],
-        child: _Scaffold(
-          homeScrollController: ScrollController(),
-          exploreScrollController: ScrollController(),
-        ));
+        child: _Scaffold());
   }
 }
 
 class _Scaffold extends StatelessWidget {
-  final ScrollController homeScrollController;
-  final ScrollController exploreScrollController;
   final PageController pageController = PageController();
 
   _Scaffold({
-    required this.homeScrollController,
-    required this.exploreScrollController,
     Key? key,
   }) : super(key: key);
 
@@ -43,40 +33,24 @@ class _Scaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+      bottomNavigationBar: BlocBuilder<NavigationBloc, NavigationState>(
+        builder: (context, state) {
+          return _CustomBottomBar(
+            pageController: pageController,
+          );
+        },
+      ),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
           PageView(
             physics: const NeverScrollableScrollPhysics(),
             controller: pageController,
-            children: [
-              LearnerHomeScreen(
-                scrollController: homeScrollController,
-              ),
-              LearnerExploreScreen(
-                scrollController: exploreScrollController,
-              ),
-              const LearnerMeScreen()
+            children: const [
+              LearnerHomeScreen(),
+              LearnerExploreScreen(),
+              LearnerMeScreen()
             ],
-          ),
-          BlocBuilder<NavigationBloc, NavigationState>(
-            builder: (context, state) {
-              ScrollController _scrollController = homeScrollController;
-              if (state is NavigationBarChanged) {
-                if (state.currentIndex == 0) {
-                  _scrollController = homeScrollController;
-                } else if (state.currentIndex == 1) {
-                  _scrollController = exploreScrollController;
-                }
-              }
-              return Hidable(
-                child: _CustomBottomBar(
-                  pageController: pageController,
-                ),
-                controller: _scrollController,
-                size: 11.3.h,
-              );
-            },
           ),
         ],
       ),
@@ -102,15 +76,18 @@ class _CustomBottomBar extends StatelessWidget {
   Color _exploreColor = commonBlack;
 
   double _meScale = .95;
-  String _me = CustomIcons.mePrimaryIcon;
+  String _me = CustomIcons.meSecondaryIcon;
   Color _meColor = commonBlack;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+    return Container(
+      decoration:  BoxDecoration(
+        border:Border.all(color: commonGreen),
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15))
+      ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)),
         child: BlocBuilder<NavigationBloc, NavigationState>(
           builder: (context, state) {
             if (state is NavigationBarChanged) {
@@ -122,7 +99,7 @@ class _CustomBottomBar extends StatelessWidget {
                 _exploreScale = 1;
                 _meScale = .95;
                 _explore = CustomIcons.explorePrimaryIcon;
-                _me = CustomIcons.mePrimaryIcon;
+                _me = CustomIcons.meSecondaryIcon;
                 _meColor = commonBlack;
                 _exploreColor = commonBlack;
               } else if (index == 1) {
@@ -132,7 +109,7 @@ class _CustomBottomBar extends StatelessWidget {
                 _homeScale = 1;
                 _meScale = .95;
                 _home = CustomIcons.homePrimaryIcon;
-                _me = CustomIcons.mePrimaryIcon;
+                _me = CustomIcons.meSecondaryIcon;
                 _meColor = commonBlack;
                 _homeColor = commonBlack;
               } else if (index == 2) {
@@ -148,7 +125,7 @@ class _CustomBottomBar extends StatelessWidget {
               }
             }
             return BottomNavigationBar(
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: commonWhite,
               onTap: (index) {
                 pageController.animateToPage(index,
                     duration: const Duration(milliseconds: 600),

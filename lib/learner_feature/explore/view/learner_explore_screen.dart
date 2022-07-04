@@ -13,24 +13,19 @@ import 'package:sizer/sizer.dart';
 import 'dart:math' as math;
 
 class LearnerExploreScreen extends StatelessWidget {
-  final ScrollController scrollController;
 
-  const LearnerExploreScreen({Key? key, required this.scrollController})
+  const LearnerExploreScreen({Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _Scaffold(
-      scrollController: scrollController,
-    );
+    return _Scaffold();
   }
 }
 
 class _Scaffold extends StatelessWidget {
-  final ScrollController scrollController;
 
   const _Scaffold({
-    required this.scrollController,
     Key? key,
   }) : super(key: key);
 
@@ -40,7 +35,6 @@ class _Scaffold extends StatelessWidget {
         child: Scaffold(
       backgroundColor: Colors.transparent,
       body: ListView(
-        controller: scrollController,
         children: [
           SizedBox(
             height: 2.h,

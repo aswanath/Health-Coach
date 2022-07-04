@@ -23,9 +23,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-        statusBarColor: commonWhite, statusBarIconBrightness: Brightness.dark
-    ));
     cachingImage(context);
     return Sizer(builder: (context, orientation, deviceType) {
       return OverlaySupport.global(

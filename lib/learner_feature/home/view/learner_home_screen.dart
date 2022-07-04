@@ -1,13 +1,16 @@
 import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/custom_classes/shimmer_custom.dart';
 import 'package:health_coach/learner_feature/bloc/learner_bloc.dart';
 import 'package:health_coach/learner_feature/home/cubit/carousel_slider_cubit.dart';
+import 'package:health_coach/learner_feature/home/locked_course/view/recommended_courses.dart';
 import 'package:health_coach/learner_feature/home/model/home_model.dart';
 import 'package:health_coach/learner_feature/home/unlocked_course/view/unlocked_course_screen.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,29 +19,19 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class LearnerHomeScreen extends StatelessWidget {
-  final ScrollController scrollController;
-
-  const LearnerHomeScreen({Key? key, required this.scrollController})
-      : super(key: key);
+  const LearnerHomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-              create: (context) => CarouselSliderCubit()..greetingChange()),
-        ],
-        child: _Scaffold(
-          scrollController: scrollController,
-        ));
+    return MultiBlocProvider(providers: [
+      BlocProvider(
+          create: (context) => CarouselSliderCubit()..greetingChange()),
+    ], child: const _Scaffold());
   }
 }
 
 class _Scaffold extends StatefulWidget {
-  final ScrollController scrollController;
-
   const _Scaffold({
-    required this.scrollController,
     Key? key,
   }) : super(key: key);
 
@@ -46,10 +39,10 @@ class _Scaffold extends StatefulWidget {
   State<_Scaffold> createState() => _ScaffoldState();
 }
 
-class _ScaffoldState extends State<_Scaffold>
-    with SingleTickerProviderStateMixin {
+class _ScaffoldState extends State<_Scaffold> with TickerProviderStateMixin {
   late LearnerBloc learnerBloc;
   late AnimationController rotationController;
+  late AnimationController secondRotationController;
 
   @override
   initState() {
@@ -58,6 +51,15 @@ class _ScaffoldState extends State<_Scaffold>
     learnerBloc.add(LoadBanner());
     rotationController = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
+    secondRotationController = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
+  }
+
+  @override
+  dispose() async {
+    rotationController.dispose();
+    secondRotationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -65,39 +67,121 @@ class _ScaffoldState extends State<_Scaffold>
     return SafeArea(
         child: Scaffold(
       backgroundColor: Colors.transparent,
-      body: ListView(
-        cacheExtent: 0,
-        controller: widget.scrollController,
-        children: [
-          SizedBox(
-            height: 2.h,
-          ),
-          GreetingText(),
-          SizedBox(height: 2.5.h),
-          const _Carousel(),
-          SizedBox(
-            height: 1.h,
-          ),
-          const _CarouselIndicator(),
-          SizedBox(
-            height: 2.h,
-          ),
-          const _WeightGraph(),
-          Padding(
-            padding: EdgeInsets.only(left: 6.w, top: 2.5.h, bottom: 1.h),
-            child: const _YourCourseHeader(),
-          ),
-          _YourCourses(rotationController: rotationController),
-          // const HorizontalScrollView(
-          //   title: 'Courses you might like',
-          //   isUnlocked: false,
-          // ),
-          SizedBox(
-            height: 2.5.h,
-          ),
-        ],
+      body: RefreshIndicator(
+        color: commonGreen,
+        onRefresh: () async {
+          learnerBloc.add(HomeReloadEvent());
+          return Future.delayed(const Duration(milliseconds: 1000));
+        },
+        child: ListView(
+          cacheExtent: 1000,
+          children: [
+            SizedBox(
+              height: 2.h,
+            ),
+            GreetingText(),
+            SizedBox(height: 2.5.h),
+            const _Carousel(),
+            SizedBox(
+              height: 1.h,
+            ),
+            const _CarouselIndicator(),
+            SizedBox(
+              height: 2.h,
+            ),
+            const _WeightGraph(),
+            const _YourCourseHeader(),
+            _YourCourses(rotationController: rotationController),
+            Padding(
+              padding: EdgeInsets.only(left: 6.w, top: 2.5.h, bottom: 1.h),
+              child: Text(
+                'Recommended Courses',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+            _RecommendedCourses(
+                secondRotationController: secondRotationController),
+            SizedBox(
+              height: 2.5.h,
+            ),
+          ],
+        ),
       ),
     ));
+  }
+}
+
+class _RecommendedCourses extends StatelessWidget {
+  const _RecommendedCourses({
+    Key? key,
+    required this.secondRotationController,
+  }) : super(key: key);
+
+  final AnimationController secondRotationController;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LearnerBloc, LearnerState>(buildWhen: (prev, curr) {
+      if (curr is LockedCoursesState) {
+        return true;
+      }
+      return false;
+    }, builder: (context, state) {
+      if (state is LockedCoursesState) {
+        if (state.status == Status.loading) {
+          return const LoadingShimmer();
+        } else if (state.status == Status.fail) {
+          return FailWidgetRetry(
+            rotationController: secondRotationController,
+            onPressed: () {
+              secondRotationController.forward(from: 0.0);
+              context.read<LearnerBloc>().add(LoadLockedCourses());
+            },
+          );
+        } else {
+          return SizedBox(
+            height: 25.h,
+            child: ListView.separated(
+              padding: EdgeInsets.symmetric(horizontal: 6.w),
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: state.lockedCourses!.length,
+              separatorBuilder: (context, index) {
+                return SizedBox(
+                  width: 2.w,
+                );
+              },
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  child: _HorizontalScrollItem(
+                    imagePath: state.lockedCourses![index].dietimage,
+                    header: state.lockedCourses![index].workout,
+                  ),
+                  onTap: () async{
+                    final _isBuyed = await Navigator.push(
+                        context,
+                        PageTransition(
+                            child: BlocProvider.value(
+                              value: context.read<LearnerBloc>(),
+                              child: RecommendCourses(
+                                lockedCourse: state.lockedCourses![index],
+                              ),
+                            ),
+                            type: PageTransitionType.fade));
+
+                    if(_isBuyed == true){
+                      context.read<LearnerBloc>().add(HomeReloadEvent());
+                    }
+                  },
+                );
+              },
+            ),
+          );
+        }
+      } else {
+        return const LoadingShimmer();
+      }
+    });
   }
 }
 
@@ -112,99 +196,131 @@ class _YourCourses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LearnerBloc, LearnerState>(buildWhen: (prev, cur) {
-      if (cur is UnlockedCoursesLoaded ||
-          cur is UnlockedCoursesLoading ||
-          cur is UnlockedCoursesLoadingFailed) {
+      if (cur is UnlockedCoursesState) {
         return true;
       }
       return false;
     }, builder: (context, state) {
-      if (state is UnlockedCoursesLoading) {
-        return UnconstrainedBox(
-          child: Container(
-            height: 5.h,
-            width: 5.h,
-            child: const CircularProgressIndicator(
-              color: commonBlack,
-            ),
-            margin: EdgeInsets.only(top: 1.h),
-          ),
-        );
-      } else if (state is UnlockedCoursesLoadingFailed) {
-        return Column(
-          children: [
-            SizedBox(
-              height: 1.h,
-            ),
-            Material(
-              child: RotationTransition(
-                turns: Tween(begin: 0.0, end: 1.0)
-                    .animate(rotationController),
-                child: IconButton(
-                  onPressed: () {
-                    rotationController.forward(from: 0.0);
-                    context
-                        .read<LearnerBloc>()
-                        .add(LoadUnlockedCourses());
-                  },
-                  icon: Icon(
-                    Icons.refresh,
-                    color: commonBlack.withOpacity(.7),
-                    size: 25.sp,
-                  ),
-                  padding: const EdgeInsets.all(1),
-                ),
-              ),
-              shape: StadiumBorder(
-                  side: BorderSide(color: commonBlack.withOpacity(.2))),
-              elevation: 5,
-            ),
-            SizedBox(
-              height: 1.h,
-            ),
-            Text(
-              "Loading Failed! please retry",
-              style: Theme.of(context).textTheme.labelSmall,
-            )
-          ],
-        );
-      } else if (state is UnlockedCoursesLoaded) {
-        return SizedBox(
-          height: 25.h,
-          child: ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 6.w),
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            itemCount: state.unlockedCourses.length,
-            separatorBuilder: (context, index) {
-              return SizedBox(
-                width: 2.w,
-              );
+      if (state is UnlockedCoursesState) {
+        if (state.status == Status.loading) {
+          return const LoadingShimmer();
+        } else if (state.status == Status.fail) {
+          return FailWidgetRetry(
+            rotationController: rotationController,
+            onPressed: () {
+              rotationController.forward(from: 0.0);
+              context.read<LearnerBloc>().add(LoadUnlockedCourses());
             },
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                child: _HorizontalScrollItem(
-                  imagePath: state.unlockedCourses[index].workout.image,
-                  header: state.unlockedCourses[index].workout.workout,
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          child: UnlockedCourse(
-                            heroTag: index,
-                            workout: state.unlockedCourses[index].workout,
-                          ),
-                          type: PageTransitionType.fade));
+          );
+        } else {
+          if(state.unlockedCourses!.isEmpty){
+            return const SizedBox();
+          }else {
+            return SizedBox(
+              height: 25.h,
+              child: ListView.separated(
+                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: state.unlockedCourses!.length,
+                separatorBuilder: (context, index) {
+                  return SizedBox(
+                    width: 2.w,
+                  );
                 },
-              );
-            },
-          ),
-        );
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    child: _HorizontalScrollItem(
+                      imagePath: state.unlockedCourses![index].workout.image,
+                      header: state.unlockedCourses![index].workout.workout,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: UnlockedCourse(
+                                heroTag: index,
+                                workout: state.unlockedCourses![index].workout,
+                              ),
+                              type: PageTransitionType.fade));
+                    },
+                  );
+                },
+              ),
+            );
+          }
+        }
       } else {
-        return const SizedBox();
+        return const LoadingShimmer();
       }
     });
+  }
+}
+
+class LoadingShimmer extends StatelessWidget {
+  const LoadingShimmer({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 25.h,
+      child: ListView.separated(
+        padding: EdgeInsets.only(left: 6.w),
+        itemCount: 3,
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context,index)=> ShimmerCustom.rectangular(width: 40.w, height: 25.h),
+        separatorBuilder: (context,index)=> SizedBox(width: 2.w,),
+      ),
+    );
+  }
+}
+
+class FailWidgetRetry extends StatelessWidget {
+  final VoidCallback onPressed;
+  final AnimationController rotationController;
+
+  const FailWidgetRetry({
+    required this.onPressed,
+    Key? key,
+    required this.rotationController,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 1.h,
+        ),
+        Material(
+          child: RotationTransition(
+            turns: Tween(begin: 0.0, end: 1.0).animate(rotationController),
+            child: IconButton(
+              onPressed: onPressed,
+              icon: Icon(
+                Icons.refresh,
+                color: commonBlack.withOpacity(.7),
+                size: 25.sp,
+              ),
+              padding: const EdgeInsets.all(1),
+            ),
+          ),
+          shape: StadiumBorder(
+              side: BorderSide(color: commonBlack.withOpacity(.2))),
+          elevation: 5,
+        ),
+        SizedBox(
+          height: 1.h,
+        ),
+        Text(
+          "Loading Failed! please retry",
+          style: Theme.of(context).textTheme.labelSmall,
+        )
+      ],
+    );
   }
 }
 
@@ -217,21 +333,23 @@ class _YourCourseHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LearnerBloc, LearnerState>(
       buildWhen: (prev, cur) {
-        if (cur is UnlockedCoursesLoaded ||
-            cur is UnlockedCoursesLoading ||
-            cur is UnlockedCoursesLoadingFailed) {
+        if (cur is UnlockedCoursesState) {
           return true;
         }
         return false;
       },
       builder: (context, state) {
-        if (state is UnlockedCoursesLoaded &&
-            state.unlockedCourses.isEmpty) {
+        if (state is UnlockedCoursesState &&
+            state.status == Status.success &&
+            state.unlockedCourses!.isEmpty) {
           return const SizedBox();
         } else {
-          return Text(
-            'Your Courses',
-            style: Theme.of(context).textTheme.labelMedium,
+          return Padding(
+            padding: EdgeInsets.only(left: 6.w, top: 2.5.h, bottom: 1.h),
+            child: Text(
+              'Your Courses',
+              style: Theme.of(context).textTheme.labelMedium,
+            ) ,
           );
         }
       },
@@ -555,12 +673,27 @@ class _Carousel extends StatelessWidget {
                     ),
                   );
                 } else if (state.status == Status.loading) {
-                  return Container(
-                    color: Colors.green,
-                    height: 10.h,
-                    width: 80.w,
-                  );
+                  return ShimmerCustom.rectangular(width: 88.w, height: 22.h);
                 } else {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: commonBlack,
+                          size: 25.sp,
+                        ),
+                        SizedBox(
+                          height: .5.h,
+                        ),
+                        Text(
+                          "Something went wrong, please retry",
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
+                  );
                   return Container(
                     color: Colors.red,
                     height: 10.h,
@@ -568,9 +701,7 @@ class _Carousel extends StatelessWidget {
                   );
                 }
               } else {
-                return SizedBox(
-                  child: Text("NO tload"),
-                );
+                return const LoadingShimmer();
               }
             },
           ),
@@ -595,11 +726,10 @@ class _CarouselItem extends StatelessWidget {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Image.network(
-          imageLink,
-          fit: BoxFit.cover,
+        CachedNetworkImage(
+          imageUrl: imageLink,
           height: 22.h,
-          width: 100.w,
+          fit: BoxFit.cover,
         ),
         ClipRRect(
           child: SizedBox(

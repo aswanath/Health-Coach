@@ -5,16 +5,18 @@ import 'package:sizer/sizer.dart';
 
 class CustomListTile extends StatelessWidget {
   final String title;
-  final String leadingIcon;
+  final String? leadingIcon;
   final double? transform;
   final bool isTrailing;
   final VoidCallback? onTap;
+  final IconData? iconData;
 
   const CustomListTile({
     Key? key,
     required this.title,
-    required this.leadingIcon,
+     this.leadingIcon,
     this.transform,
+    this.iconData,
     this.onTap,
     this.isTrailing = true,
   }) : super(key: key);
@@ -26,10 +28,10 @@ class CustomListTile extends StatelessWidget {
       child: ListTile(
         leading: Transform.rotate(
           angle: transform ?? 0,
-          child: Iconify(
-            leadingIcon,
+          child: leadingIcon!=null?Iconify(
+            leadingIcon!,
             size: 20.sp,
-          ),
+          ):Icon(iconData,color: commonBlack,size: 24.sp,),
         ),
         title: Text(
           title,

@@ -1,45 +1,112 @@
-
 import 'package:animate_do/animate_do.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_coach/constants/constants.dart';
+import 'package:health_coach/custom_classes/better_player_configuration.dart';
 import 'package:health_coach/custom_widgets/appbar.dart';
 import 'package:health_coach/custom_widgets/elevated_button.dart';
+import 'package:health_coach/learner_feature/bloc/learner_bloc.dart';
+import 'package:health_coach/learner_feature/home/model/locked_courses_model.dart';
 import 'package:health_coach/learner_feature/home/unlocked_course/bloc/buy_course_bloc.dart';
 import 'package:hidable/hidable.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 
 class RecommendCourses extends StatelessWidget {
-  const RecommendCourses({Key? key}) : super(key: key);
+  final LockedCourses lockedCourse;
+
+  const RecommendCourses({Key? key, required this.lockedCourse})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BuyCourseBloc(),
-      child: BlocListener<BuyCourseBloc, BuyCourseState>(
-        listener: (context, state) {
-          if (state is BuyCourseSuccess) {
+    return BlocListener<LearnerBloc, LearnerState>(
+      listener: (context, state) {
+        if (state is CourseBuyState) {
+          if (state.status == Status.success) {
+            Navigator.pop(context);
             showDialog(
                 useRootNavigator: false,
                 barrierDismissible: false,
                 context: context,
                 builder: (_) {
-                  return const _BuySuccessDialog();
+                  return _BuySuccessDialog(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context,true);
+                    },
+                  );
                 });
+          } else if (state.status == Status.fail) {
+            Navigator.pop(context);
+            showDialog(
+                useRootNavigator: false,
+                barrierDismissible: false,
+                context: context,
+                builder: (_) {
+                  return _BuyFailureDialog(onPressed: () {
+                    context
+                        .read<LearnerBloc>()
+                        .add(CourseBuyEvent(lockedCourse: lockedCourse));
+                  });
+                });
+          } else if (state.status == Status.preLoading) {
+            showDialog(
+                useRootNavigator: false,
+                barrierDismissible: false,
+                context: context,
+                builder: (_) {
+                  return WillPopScope(
+                      child: const Center(
+                          child: CircularProgressIndicator(
+                        color: commonGreen,
+                      )),
+                      onWillPop: () => Future.value(false));
+                });
+          } else {
+            Navigator.pop(context);
           }
-        },
-        child: _Scaffold(),
+        }
+      },
+      child: _Scaffold(
+        lockedCourse: lockedCourse,
       ),
     );
   }
 }
 
-class _Scaffold extends StatelessWidget {
+class _Scaffold extends StatefulWidget {
+  final LockedCourses lockedCourse;
+
   _Scaffold({
     Key? key,
+    required this.lockedCourse,
   }) : super(key: key);
+
+  @override
+  State<_Scaffold> createState() => _ScaffoldState();
+}
+
+class _ScaffoldState extends State<_Scaffold> {
   final ScrollController scrollController = ScrollController();
+  late BetterPlayerController _controller;
+  late BetterPlayerConfiguration _configuration;
+
+  @override
+  initState() {
+    super.initState();
+    _configuration = playerConfiguration(image: widget.lockedCourse.dietimage);
+    _controller = BetterPlayerController(_configuration,
+        betterPlayerDataSource:
+            BetterPlayerDataSource.network(widget.lockedCourse.preview));
+  }
+
+  @override
+  dispose() {
+    _controller.dispose(forceDispose: true);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +121,9 @@ class _Scaffold extends StatelessWidget {
               elevation: 0,
               iconTheme: IconThemeData(color: commonGreen, size: 24.sp),
               titleSpacing: 0,
-              title: const AppBarTitle(title: 'Cardio Hard', author: 'Rajesh Kumar'),
+              title: AppBarTitle(
+                  title: widget.lockedCourse.workout,
+                  author: widget.lockedCourse.trainer),
             ),
           ),
         ),
@@ -68,7 +137,17 @@ class _Scaffold extends StatelessWidget {
                 SizedBox(
                   height: 2.h,
                 ),
-                const _CarouselItem(),
+                Text(
+                  "Preview",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
+                ClipRRect(
+                  child: BetterPlayer(controller: _controller),
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 SizedBox(
                   height: 3.h,
                 ),
@@ -80,9 +159,7 @@ class _Scaffold extends StatelessWidget {
                   height: 1.5.h,
                 ),
                 Text(
-                  '''In purus at morbi magna in in maecenas. Nunc nulla magna elit, varius phasellus 
-Nunc nulla magna elit, varius phasellus blandit convallis. In purus at morbi
-magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis.''',
+                  widget.lockedCourse.description,
                   style: Theme.of(context)
                       .textTheme
                       .labelSmall!
@@ -139,7 +216,7 @@ magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis.
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '₹ 499',
+                      '₹ ${widget.lockedCourse.price}',
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium!
@@ -147,12 +224,13 @@ magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis.
                     ),
                     CustomElevatedButton(
                       voidCallback: () {
-                        context.read<BuyCourseBloc>().add(BuyNowClicked());
+                        context.read<LearnerBloc>().add(
+                            CourseBuyEvent(lockedCourse: widget.lockedCourse));
                       },
                       text: 'Buy Now',
                       padding: EdgeInsets.symmetric(
                           horizontal: 8.w, vertical: 1.2.h),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -164,72 +242,12 @@ magna in in maecenas. Nunc nulla magna elit, varius phasellus blandit convallis.
   }
 }
 
-class _CarouselItem extends StatelessWidget {
-  const _CarouselItem({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.asset(
-              'assets/images/carousel_demo.jpg',
-              fit: BoxFit.cover,
-              height: 22.h,
-              width: 100.w,
-            ),
-          ),
-          Icon(
-            Icons.lock_outline_rounded,
-            color: commonWhite,
-            size: 38.sp,
-          ),
-          Positioned(
-            child: Container(
-              padding: const EdgeInsets.only(left: 5, top: 5, bottom: 5),
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                  ),
-                  color: commonGreen),
-              child: Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      bottomLeft: Radius.circular(20),
-                    ),
-                    color: commonWhite),
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 6.w, vertical: .25.h),
-                  child: Text(
-                    'Cardio',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium!
-                        .copyWith(color: commonGreen, fontSize: 12.sp),
-                  ),
-                ),
-              ),
-            ),
-            right: 0,
-            bottom: 4.h,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _BuySuccessDialog extends StatelessWidget {
+  final VoidCallback onPressed;
+
   const _BuySuccessDialog({
     Key? key,
+    required this.onPressed,
   }) : super(key: key);
 
   @override
@@ -263,22 +281,95 @@ class _BuySuccessDialog extends StatelessWidget {
                     child: ElasticIn(
                       duration: const Duration(milliseconds: 2000),
                       child: Text(
-                        "Success",
+                        "Payment Success",
                         style: Theme.of(context)
                             .textTheme
                             .headlineLarge!
-                            .copyWith(color: commonGreen, fontSize: 20.sp),
+                            .copyWith(color: commonGreen, fontSize: 18.sp),
                       ),
                     ),
                   )
                 ],
               ),
               CustomElevatedButton(
-                voidCallback: () {
-                  Navigator.of(context).pop();
-                },
-                text: 'Go back',
+                voidCallback: onPressed,
+                text: 'Go Home',
                 padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BuyFailureDialog extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _BuyFailureDialog({
+    Key? key,
+    required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Dialog(
+        insetPadding: EdgeInsets.zero,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20), color: Colors.white),
+          height: 29.5.h,
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  LottieBuilder.asset(
+                    'assets/lottie_animation/payment_lottie.json',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    height: 15.5.h,
+                    repeat: false,
+                  ),
+                  Positioned(
+                    top: 11.5.h,
+                    child: ElasticIn(
+                      duration: const Duration(milliseconds: 2000),
+                      child: Text(
+                        'Payment Failed',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge!
+                            .copyWith(color: Colors.red, fontSize: 20.sp),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              CustomElevatedButton(
+                backgroundColor: Colors.red,
+                voidCallback: onPressed,
+                text: "Retry",
+                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+              ),
+              CustomElevatedButton(
+                voidCallback: () {
+                  Navigator.pop(context);
+                },
+                text: 'Go Back',
+                backgroundColor: Colors.transparent,
+                foregroundColor: commonBlack,
+                fontSize: 12.sp,
               )
             ],
           ),

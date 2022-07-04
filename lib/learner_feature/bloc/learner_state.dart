@@ -1,6 +1,6 @@
 part of 'learner_bloc.dart';
 
-enum Status {loading,success,fail}
+enum Status {loading,success,fail,preLoading}
 @immutable
 abstract class LearnerState {}
 
@@ -12,19 +12,22 @@ class UnlockedCoursesState extends LearnerState{
   UnlockedCoursesState({required this.status,this.unlockedCourses});
 }
 
-class UnlockedCoursesLoading extends LearnerState{}
-
-class UnlockedCoursesLoaded extends LearnerState{
-  final List<UnlockedCourses> unlockedCourses;
-  UnlockedCoursesLoaded({required this.unlockedCourses});
-}
-
-class UnlockedCoursesLoadingFailed extends LearnerState{}
-
 class BannerState extends LearnerState{
   final Status status;
   final HomeBanner? banner;
   BannerState({required this.status,this.banner});
 }
 
+class LockedCoursesState extends LearnerState{
+  final Status status;
+  final List<LockedCourses>? lockedCourses;
+  LockedCoursesState({required this.status,this.lockedCourses});
+}
+
+
 class LogOutState extends LearnerState{}
+
+class CourseBuyState extends LearnerState{
+  final Status status;
+  CourseBuyState({required this.status});
+}

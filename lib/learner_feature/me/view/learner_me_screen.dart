@@ -85,8 +85,7 @@ class _Scaffold extends StatelessWidget {
           ),
           CustomListTile(
             title: 'My Courses',
-            leadingIcon: CustomIcons.myCoursesIcon,
-            transform: -.6,
+            leadingIcon: CustomIcons.courseIcon,
             onTap: () {
               Navigator.push(
                   context,
@@ -97,7 +96,7 @@ class _Scaffold extends StatelessWidget {
           ),
           const CustomListTile(
             title: 'Help Centre',
-            leadingIcon: CustomIcons.myHelpCenter,
+            leadingIcon: CustomIcons.myMessagesIcon,
             isTrailing: false,
           ),
           CustomListTile(
@@ -161,8 +160,8 @@ class _Scaffold extends StatelessWidget {
           ),
           const CustomListTile(
             title: 'Rate Us',
-            leadingIcon: CustomIcons.myRateUs,
             isTrailing: false,
+            iconData: Icons.rate_review_outlined,
           ),
         ],
       ),
